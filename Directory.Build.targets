@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile Condition=" '$(SignAssembly)' == 'true' ">$(MSBuildThisFileDirectory)build\rtfx.snk</AssemblyOriginatorKeyFile>
+    <NoWarn Condition="$(TargetFrameworkIdentifier) == '.NETFramework' or $(TargetFrameworkIdentifier) == '.NETStandard' ">$(NoWarn);8600;8601;8602;8603;8604;8777;8767</NoWarn>
+  </PropertyGroup>
+</Project>
