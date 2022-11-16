@@ -17,7 +17,7 @@ function createWindow() {
 
   mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, `../../web/dist/rtfx/index.html`),
+      pathname: path.join(__dirname, `./rtfx/index.html`),
       protocol: "file:",
       slashes: true,
     })

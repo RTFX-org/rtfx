@@ -1,6 +1,10 @@
 appId: com.rtfx.client
 mac:
   category: public.app-category.developer-tools
-
+files:
+  - ./rtfx/**/*
+  - ./main.js
 directories:
   output: bundle
+  app: electron
+  buildResources: electron/build
