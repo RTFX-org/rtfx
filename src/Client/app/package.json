@@ -1,0 +1,19 @@
+{
+  "name": "rtfx-app",
+  "description": "RTFX Electron App",
+  "version": "0.0.1",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "build": "yarn tsc",
+    "start-app": "yarn rimraf ../dist/** && yarn cpy . ../../dist/ --cwd=dist && yarn cpy . ../../../dist/ --cwd=../web/dist/rtfx",
+    "start-electron": "electron ../dist/main.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "cpy-cli": "^4.2.0",
+    "electron": "^21.2.3",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.3"
+  }
+}
