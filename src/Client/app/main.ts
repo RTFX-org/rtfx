@@ -23,7 +23,7 @@ function createWindow() {
     })
   );
   // Open the DevTools. If you don't want you delete this
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", function () {
     mainWindow = null;

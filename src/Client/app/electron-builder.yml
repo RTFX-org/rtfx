@@ -1,0 +1,6 @@
+appId: com.rtfx.client
+mac:
+  category: public.app-category.developer-tools
+
+directories:
+  output: bundle

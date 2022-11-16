@@ -6,16 +6,19 @@
   "private": true,
   "scripts": {
     "build": "yarn tsc",
-    "start-app": "electron ./dist/main.js"
+    "start-app": "electron ./dist/main.js",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
-  "dependencies": {},
+  "dependencies": {
+    "electron-localshortcut": "^3.2.1"
+  },
   "devDependencies": {
     "@types/electron-localshortcut": "^3.1.0",
     "cpy-cli": "^4.2.0",
     "del-cli": "^5.0.0",
     "electron": "^21.2.3",
     "electron-builder": "^23.6.0",
-    "electron-localshortcut": "^3.2.1",
     "typescript": "^4.9.3"
   }
 }
