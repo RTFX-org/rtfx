@@ -1,6 +1,5 @@
 import { exec } from 'child_process';
-import { platform } from 'os';
-import * as fs from 'fs-extra';
+import * as fse from 'fs-extra';
 import { exit } from 'process';
 
 const execAsync = (command: string) => {
@@ -19,20 +18,15 @@ const createDirLink = async (
   linkPath: string,
   realPath: string
 ): Promise<void> => {
-  if (platform() === 'win32') {
-    const cmd = `mklink /J "${linkPath}" "${realPath}"`;
-    execAsync(cmd).then(() => {
-      console.log(`Created link ${linkPath} -> ${realPath}`);
-    });
-  } else {
-    await fs.ensureSymlink(realPath, linkPath, 'file');
-    console.log(`Created link ${linkPath} -> ${realPath}`);
+  if (fse.existsSync(linkPath)) {
+    console.log(`Link path ${linkPath} already exists`);
+    return;
   }
+  await fse.ensureSymlink(realPath, linkPath, 'dir');
+  console.log(`Created link ${linkPath} -> ${realPath}`);
 };
 
-fs.remove('./electron/rtfx').then(() => {
-  createDirLink('./electron/rtfx', './dist/rtfx').catch((error) => {
-    console.error(error);
-    exit(1);
-  });
+createDirLink('./electron/rtfx', './dist/rtfx').catch((error) => {
+  console.error(error);
+  exit(1);
 });

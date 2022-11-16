@@ -4,13 +4,7 @@
   "version": "0.0.1",
   "main": "main.js",
   "private": true,
-  "scripts": {
-    "build": "yarn tsc",
-    "start-app": "electron ./dist/main.js",
-    "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder",
-    "fix-cjs": "node --loader ts-node/esm ./link-events.ts"
-  },
+  "scripts": {},
   "dependencies": {
     "electron-localshortcut": "^3.2.1"
   },

@@ -8,9 +8,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "link-dist": "node --loader ts-node/esm ./electron/tools/symlink.ts",
-    "build-electron": "yarn link-dist && yarn tsc -p electron/tsconfig.json",
-    "app:dir": "electron-builder --dir"
+    "link-dist": "node ./electron/tools/symlink.js",
+    "build-electron": "yarn tsc -p electron/tsconfig.json && yarn link-dist",
+    "start-app": "electron ./dist/main.js",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "private": true,
   "dependencies": {
