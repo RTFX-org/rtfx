@@ -6,7 +6,7 @@ namespace Rtfx.Server.Database.Entities;
 [PrimaryKey(nameof(ArtifactId), nameof(Tag))]
 public class ArtifactTag
 {
-    public Guid ArtifactId { get; init; }
+    public long ArtifactId { get; init; }
 
     [Required]
     [MaxLength(255)]

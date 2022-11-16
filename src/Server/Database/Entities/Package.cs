@@ -4,13 +4,13 @@ namespace Rtfx.Server.Database.Entities;
 
 public class Package
 {
-    public Guid PackageId { get; init; }
+    public long PackageId { get; init; }
 
     [Required]
     [MaxLength(255)]
     public required string Name { get; set; }
 
-    public Guid FeedId { get; init; }
+    public long FeedId { get; init; }
 
     [Required]
     public DateTime CreationDate { get; set; } = DateTime.UtcNow;

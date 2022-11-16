@@ -4,12 +4,12 @@ namespace Rtfx.Server.Database.Entities;
 
 public class Artifact
 {
-    public Guid ArtifactId { get; init; }
+    public long ArtifactId { get; init; }
 
     [Required]
     public required byte[] SourceHash { get; init; }
 
-    public Guid PackageId { get; init; }
+    public long PackageId { get; init; }
 
     [Required]
     public DateTime CreationDate { get; set; } = DateTime.UtcNow;

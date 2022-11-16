@@ -36,26 +36,38 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
     {
         Put("/api/feeds");
         AllowAnonymous();
-        Description(x => x.WithName("CreateFeed").WithGroupName("Feeds"));
+        Description(x => x
+            .WithName("CreateFeed")
+            .WithTags("Feeds")
+            .DoesNotProduce(Status200OK)
+            .Produces<CreateFeedResponse>(Status201Created)
+            .ProducesProblemFE(Status400BadRequest)
+            .ProducesProblemFE(Status409Conflict));
         Summary(x =>
         {
+            x.Summary = "Creates a new feed.";
+            x.Responses[Status201Created] = "The feed has been created successfully.";
+            x.Responses[Status409Conflict] = ErrorMessages.FeedWithNameAlreadyExists("[name]");
         });
     }
 
     public override async Task HandleAsync(CreateFeedRequest req, CancellationToken ct)
     {
-        var feedExists = await _database.Feeds.AnyAsync(x => x.Name == req.Name, ct);
+        var feedExists = await _database.Feeds.AnyAsync(x => x.Name == req.Name);
         if (feedExists)
         {
-            await SendStringAsync($"A feed with the name \"{req.Name}\" already exists.", statusCode: StatusCodes.Status409Conflict, cancellation: ct);
+            await this.SendErrorAsync(Status409Conflict, ErrorMessages.FeedWithNameAlreadyExists(req.Name), ct);
+            return;
         }
-        else
-        {
-            var feed = new Database.Entities.Feed { Name = req.Name };
-            await _database.Feeds.AddAsync(feed, ct);
-            await _database.SaveChangesAsync(ct);
 
-            await SendAsync(new CreateFeedResponse(FeedDto.Create(HttpContext, feed)), StatusCodes.Status201Created, ct);
-        }
+        var feed = new Db.Feed
+        {
+            Name = req.Name,
+        };
+
+        _database.Feeds.Add(feed);
+        await _database.SaveChangesAsync(ct);
+
+        await SendAsync(new CreateFeedResponse(FeedDto.Create(HttpContext, feed)), Status201Created, ct);
     }
 }

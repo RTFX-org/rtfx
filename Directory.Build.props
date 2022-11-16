@@ -3,7 +3,7 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Configuration Condition="$(Configuration) = ''">Debug</Configuration>
+    <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
     <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
 
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\rtfx.ruleset</CodeAnalysisRuleSet>

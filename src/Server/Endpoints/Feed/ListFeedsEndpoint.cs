@@ -38,6 +38,15 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
     {
         Get("/api/feeds");
         AllowAnonymous();
+        Description(x => x
+            .WithName("ListFeeds")
+            .WithTags("Feeds")
+            .ProducesProblemFE(Status400BadRequest));
+        Summary(x =>
+        {
+            x.Summary = "Lists all available feeds.";
+            x.Responses[Status200OK] = "The list of feeds has ben successfully retrieved.";
+        });
     }
 
     public override async Task HandleAsync(ListFeedsRequest req, CancellationToken ct)

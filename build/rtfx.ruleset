@@ -21,8 +21,10 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1124" Action="None" />
+    <Rule Id="SA1206" Action="None" />
     <Rule Id="SA1305" Action="Warning" />
     <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1402" Action="None" />
     <Rule Id="SA1412" Action="Warning" />
     <Rule Id="SA1503" Action="None" />
     <Rule Id="SA1516" Action="None" />
@@ -36,8 +38,5 @@
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SX1101" Action="Warning" />
     <Rule Id="SX1309" Action="Warning" />
-
-    <!-- Disabled due to false positives with "required" keyword (see https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3527) -->
-    <Rule Id="SA1206" Action="None" />
   </Rules>
 </RuleSet>

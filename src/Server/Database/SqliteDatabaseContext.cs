@@ -2,7 +2,7 @@
 
 namespace Rtfx.Server.Database;
 
-public class SqliteDatabaseContext : DatabaseContext
+public sealed class SqliteDatabaseContext : DatabaseContext
 {
     private readonly IConfiguration _configuration;
     private readonly string _basePath;

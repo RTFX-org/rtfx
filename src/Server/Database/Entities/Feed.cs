@@ -4,7 +4,7 @@ namespace Rtfx.Server.Database.Entities;
 
 public class Feed
 {
-    public Guid FeedId { get; init; }
+    public long FeedId { get; init; }
 
     [Required]
     [MaxLength(255)]

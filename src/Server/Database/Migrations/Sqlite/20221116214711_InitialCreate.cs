@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 
 #nullable disable
 
 namespace Rtfx.Server.Database.Migrations.Sqlite
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public sealed partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +14,10 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                 name: "Feeds",
                 columns: table => new
                 {
-                    FeedId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false)
+                    FeedId = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -27,9 +28,11 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                 name: "Packages",
                 columns: table => new
                 {
-                    PackageId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PackageId = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    FeedId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    FeedId = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -46,9 +49,11 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                 name: "Artifacts",
                 columns: table => new
                 {
-                    ArtifactId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ArtifactId = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     SourceHash = table.Column<byte[]>(type: "BLOB", nullable: false),
-                    PackageId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    PackageId = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -65,9 +70,9 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                 name: "ArtifactMetdata",
                 columns: table => new
                 {
-                    ArtifactId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ArtifactId = table.Column<long>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Value = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false)
+                    Value = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
                 },
                 constraints: table =>
                 {
@@ -84,8 +89,8 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                 name: "ArtifactTags",
                 columns: table => new
                 {
-                    ArtifactId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Tag = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false)
+                    ArtifactId = table.Column<long>(type: "INTEGER", nullable: false),
+                    Tag = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                 },
                 constraints: table =>
                 {

@@ -6,7 +6,7 @@ namespace Rtfx.Server.Database.Entities;
 [PrimaryKey(nameof(ArtifactId), nameof(Name))]
 public class ArtifactMetadata
 {
-    public Guid ArtifactId { get; init; }
+    public long ArtifactId { get; init; }
 
     [Required]
     [MaxLength(100)]
