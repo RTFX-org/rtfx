@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import * as url from "url";
 import * as path from "path";
+import * as electronLocalshortcut from "electron-localshortcut";
 
 let mainWindow: BrowserWindow | null;
 
@@ -11,11 +12,12 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
+    frame: false,
   });
 
   mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, `../../app/dist/rtfx/index.html`),
+      pathname: path.join(__dirname, `../../web/dist/rtfx/index.html`),
       protocol: "file:",
       slashes: true,
     })
@@ -25,6 +27,18 @@ function createWindow() {
 
   mainWindow.on("closed", function () {
     mainWindow = null;
+  });
+
+  mainWindow.on("focus", () => {
+    electronLocalshortcut.register(
+      mainWindow!,
+      ["CommandOrControl+R", "CommandOrControl+Shift+R", "F5"],
+      () => {}
+    );
+  });
+
+  mainWindow.on("blur", () => {
+    electronLocalshortcut.unregisterAll(mainWindow!);
   });
 }
 
