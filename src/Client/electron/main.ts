@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import * as url from "url";
 import * as path from "path";
+import * as fs from "fs";
 import * as electronLocalshortcut from "electron-localshortcut";
 
 let mainWindow: BrowserWindow | null;
@@ -15,9 +16,13 @@ function createWindow() {
     frame: false,
   });
 
+  const compiledPath = path.join(__dirname, `./rtfx/index.html`);
+  const servePath = path.join(__dirname, `../dist/rtfx/index.html`);
+  const usedPath = fs.existsSync(compiledPath) ? compiledPath : servePath;
+
   mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, `./rtfx/index.html`),
+      pathname: usedPath,
       protocol: "file:",
       slashes: true,
     })

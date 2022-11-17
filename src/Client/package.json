@@ -10,7 +10,7 @@
     "test": "ng test",
     "copy-dist": "yarn del-cli electron/rtfx/** && yarn cpy . ../../electron/rtfx --cwd dist/rtfx",
     "build-electron": "yarn tsc -p electron/tsconfig.json && yarn copy-dist",
-    "start-app": "electron ./dist/main.js",
+    "start-app": "electron ./electron/main.js --no-sandbox",
     "app:dir": "yarn build-electron && electron-builder --dir",
     "app:dist": "yarn build-electron && electron-builder -wl"
   },
