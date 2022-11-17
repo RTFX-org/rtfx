@@ -8,11 +8,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "link-dist": "node ./electron/tools/symlink.js",
-    "build-electron": "yarn tsc -p electron/tsconfig.json && yarn link-dist",
+    "copy-dist": "yarn del-cli electron/rtfx/** && yarn cpy . ../../electron/rtfx --cwd dist/rtfx",
+    "build-electron": "yarn tsc -p electron/tsconfig.json && yarn copy-dist",
     "start-app": "electron ./dist/main.js",
-    "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder"
+    "app:dir": "yarn build-electron && electron-builder --dir",
+    "app:dist": "yarn build-electron && electron-builder -wl"
   },
   "private": true,
   "dependencies": {
@@ -34,6 +34,8 @@
     "@angular/compiler-cli": "^14.2.0",
     "@types/electron-localshortcut": "^3.1.0",
     "@types/jasmine": "~4.0.0",
+    "cpy-cli": "^4.2.0",
+    "del-cli": "^5.0.0",
     "electron": "^21.2.3",
     "electron-builder": "^23.6.0",
     "electron-localshortcut": "^3.2.1",

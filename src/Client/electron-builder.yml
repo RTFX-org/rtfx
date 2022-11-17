@@ -1,6 +1,4 @@
 appId: com.rtfx.client
-mac:
-  category: public.app-category.developer-tools
 files:
   - ./rtfx/**/*
   - ./main.js
@@ -8,3 +6,18 @@ directories:
   output: bundle
   app: electron
   buildResources: electron/build
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+mac:
+  category: public.app-category.developer-tools
+linux:
+  target:
+    - target: Snap
+      arch:
+        - x64
+    - target: AppImage
+      arch:
+        - x64
