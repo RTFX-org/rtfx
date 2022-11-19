@@ -1,32 +1,33 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
+using Rtfx.Server.Repositories;
 
 namespace Rtfx.Server.Endpoints.Feed;
 
-public sealed partial record DeleteFeedRequest(string IdOrName);
+public sealed partial record DeleteFeedRequest(long Id);
 
 public sealed class DeleteFeedRequestValidator : Validator<DeleteFeedRequest>
 {
     public DeleteFeedRequestValidator()
     {
-        RuleFor(x => x.IdOrName)
-            .NotEmpty();
+        RuleFor(x => x.Id)
+            .GreaterThan(0);
     }
 }
 
 public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
 {
-    private readonly DatabaseContext _database;
+    private readonly IFeedRepository _feedRepository;
 
-    public DeleteFeedEndpoint(DatabaseContext databaseContext)
+    public DeleteFeedEndpoint(IFeedRepository feedRepository)
     {
-        _database = databaseContext;
+        _feedRepository = feedRepository;
     }
 
     public override void Configure()
     {
-        Delete("/api/feeds/{IdOrName}");
+        Delete("/api/feeds/{Id}");
         AllowAnonymous();
         Description(x => x
             .WithName("DeleteFeed")
@@ -45,43 +46,16 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
 
     public override async Task HandleAsync(DeleteFeedRequest req, CancellationToken ct)
     {
-        var feedId = await GetFeedIdAsync(req.IdOrName, ct);
-        if (feedId <= 0)
-            return;
-
-        var feed = new Db.Feed
+        var feedExists = await _feedRepository.GetFeedExistAsync(req.Id, ct);
+        if (!feedExists)
         {
-            FeedId = feedId,
-            Name = null!,
-        };
+            await this.SendErrorAsync(Status404NotFound, ErrorMessages.FeedWithIdDoesNotExist(req.Id), ct);
+            return;
+        }
 
-        _database.Remove(feed);
-        await _database.SaveChangesAsync(ct);
+        await _feedRepository.RemoveFeedAsync(req.Id, ct);
 
         HttpContext.Response.StatusCode = Status202Accepted;
         await HttpContext.Response.StartAsync(ct);
-    }
-
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:Field names should not use Hungarian notation", Justification = "False positive")]
-    private async Task<long> GetFeedIdAsync(string idOrName, CancellationToken ct)
-    {
-        long feedId;
-        Func<string, string> errorMessageFunc;
-
-        if (long.TryParse(idOrName, out var id))
-        {
-            feedId = await _database.Feeds.AnyAsync(x => x.FeedId == id, ct) ? id : 0;
-            errorMessageFunc = static id => ErrorMessages.FeedWithIdDoesNotExist(id);
-        }
-        else
-        {
-            feedId = await _database.Feeds.Where(x => x.Name == idOrName).Select(x => x.FeedId).FirstOrDefaultAsync(ct);
-            errorMessageFunc = static name => ErrorMessages.FeedWithNameDoesNotExist(name);
-        }
-
-        if (feedId <= 0)
-            await this.SendErrorAsync(Status404NotFound, errorMessageFunc(idOrName), ct);
-
-        return feedId;
     }
 }

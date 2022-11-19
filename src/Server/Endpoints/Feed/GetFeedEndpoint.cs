@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Rtfx.Server.Database;
 using Rtfx.Server.Models.Dtos;
+using Rtfx.Server.Repositories;
 
 namespace Rtfx.Server.Endpoints.Feed;
 
-public sealed partial record GetFeedRequest(string IdOrName);
+public sealed partial record GetFeedRequest(long Id);
 
 public sealed record GetFeedResponse(FeedDto Feed);
 
@@ -13,28 +12,29 @@ public sealed class GetFeedRequestValidator : Validator<GetFeedRequest>
 {
     public GetFeedRequestValidator()
     {
-        RuleFor(x => x.IdOrName)
-            .NotEmpty();
+        RuleFor(x => x.Id)
+            .GreaterThan(0);
     }
 }
 
 public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
 {
-    private readonly DatabaseContext _database;
+    private readonly IFeedRepository _feedRepository;
 
-    public GetFeedEndpoint(DatabaseContext database)
+    public GetFeedEndpoint(IFeedRepository feedRepository)
     {
-        _database = database;
+        _feedRepository = feedRepository;
     }
 
     public override void Configure()
     {
-        Get("/api/feeds/{IdOrName}");
+        Get("/api/feeds/{Id}");
         AllowAnonymous();
         Description(x => x
             .WithName("GetFeed")
             .WithTags("Feeds")
-            .ProducesProblemFE(Status400BadRequest));
+            .ProducesProblemFE(Status400BadRequest)
+            .ProducesProblemFE(Status404NotFound));
         Summary(x =>
         {
             x.Summary = "Gets a feed.";
@@ -45,33 +45,13 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
 
     public override async Task HandleAsync(GetFeedRequest req, CancellationToken ct)
     {
-        var feed = await GetFeedAsync(req.IdOrName, ct);
+        var feed = await _feedRepository.TryGetFeedAsync(req.Id, ct);
         if (feed is null)
+        {
+            await this.SendErrorAsync(Status404NotFound, ErrorMessages.FeedWithIdDoesNotExist(req.Id), ct);
             return;
+        }
 
         await SendAsync(new GetFeedResponse(FeedDto.Create(HttpContext, feed)), cancellation: ct);
-    }
-
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:Field names should not use Hungarian notation", Justification = "False positive")]
-    private async Task<Db.Feed?> GetFeedAsync(string idOrName, CancellationToken ct)
-    {
-        Db.Feed? feed = null;
-        Func<string, string> errorMessageFunc;
-
-        if (long.TryParse(idOrName, out var id))
-        {
-            feed = await _database.Feeds.FirstOrDefaultAsync(x => x.FeedId == id, ct);
-            errorMessageFunc = static id => ErrorMessages.FeedWithIdDoesNotExist(id);
-        }
-        else
-        {
-            feed = await _database.Feeds.FirstOrDefaultAsync(x => x.Name == idOrName, ct);
-            errorMessageFunc = static name => ErrorMessages.FeedWithNameDoesNotExist(name);
-        }
-
-        if (feed is null)
-            await this.SendErrorAsync(Status404NotFound, errorMessageFunc(idOrName), ct);
-
-        return feed;
     }
 }

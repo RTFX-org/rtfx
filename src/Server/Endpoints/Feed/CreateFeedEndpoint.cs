@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Rtfx.Server.Database;
 using Rtfx.Server.Models.Dtos;
+using Rtfx.Server.Repositories;
 
 namespace Rtfx.Server.Endpoints.Feed;
 
@@ -25,11 +24,11 @@ public sealed class CreateFeedRequestValidator : Validator<CreateFeedRequest>
 
 public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedResponse>
 {
-    private readonly DatabaseContext _database;
+    private readonly IFeedRepository _feedRepository;
 
-    public CreateFeedEndpoint(DatabaseContext database)
+    public CreateFeedEndpoint(IFeedRepository feedRepository)
     {
-        _database = database;
+        _feedRepository = feedRepository;
     }
 
     public override void Configure()
@@ -53,7 +52,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
 
     public override async Task HandleAsync(CreateFeedRequest req, CancellationToken ct)
     {
-        var feedExists = await _database.Feeds.AnyAsync(x => x.Name == req.Name);
+        var feedExists = await _feedRepository.GetFeedExistAsync(req.Name, ct);
         if (feedExists)
         {
             await this.SendErrorAsync(Status409Conflict, ErrorMessages.FeedWithNameAlreadyExists(req.Name), ct);
@@ -64,9 +63,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
         {
             Name = req.Name,
         };
-
-        _database.Feeds.Add(feed);
-        await _database.SaveChangesAsync(ct);
+        await _feedRepository.InsertFeedAsync(feed, ct);
 
         await SendAsync(new CreateFeedResponse(FeedDto.Create(HttpContext, feed)), Status201Created, ct);
     }
