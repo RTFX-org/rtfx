@@ -29,9 +29,7 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
     public override void Configure()
     {
         Get("/api/feeds/{Id}");
-        AllowAnonymous();
         Description(x => x
-            .WithName("GetFeed")
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest)
             .ProducesProblemFE(Status404NotFound));

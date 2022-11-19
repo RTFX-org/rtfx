@@ -39,9 +39,7 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
     public override void Configure()
     {
         Get("/api/feeds");
-        AllowAnonymous();
         Description(x => x
-            .WithName("ListFeeds")
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest));
         Summary(x =>

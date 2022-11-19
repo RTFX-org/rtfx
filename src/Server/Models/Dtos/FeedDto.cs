@@ -1,8 +1,10 @@
 ﻿using Rtfx.Server.Database.Entities;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace Rtfx.Server.Models.Dtos;
 
+[DebuggerDisplay("{Name}")]
 public sealed class FeedDto
 {
     public required long Id { get; init; }

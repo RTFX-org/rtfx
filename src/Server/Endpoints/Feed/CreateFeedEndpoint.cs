@@ -32,9 +32,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
     public override void Configure()
     {
         Put("/api/feeds");
-        AllowAnonymous();
         Description(x => x
-            .WithName("CreateFeed")
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)
             .Produces<CreateFeedResponse>(Status201Created)

@@ -28,9 +28,7 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
     public override void Configure()
     {
         Delete("/api/feeds/{Id}");
-        AllowAnonymous();
         Description(x => x
-            .WithName("DeleteFeed")
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)
             .Produces(Status202Accepted)

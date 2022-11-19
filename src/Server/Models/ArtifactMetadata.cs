@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using System.Diagnostics;
 
 namespace Rtfx.Server.Models;
 
+[DebuggerDisplay("{FeedName}/{PackageName}/{SourceHash}")]
 public sealed record ArtifactMetadata(
     string FeedName,
     string PackageName,
@@ -10,6 +12,7 @@ public sealed record ArtifactMetadata(
     SourceVersionMetadata[] SourceVersions,
     Dictionary<string, string?> Metadata);
 
+[DebuggerDisplay("Branch = {Branch}, Commit = {Commit}")]
 public sealed record SourceVersionMetadata(
     string Branch,
     string Commit);

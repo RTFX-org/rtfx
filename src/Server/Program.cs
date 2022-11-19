@@ -24,7 +24,11 @@ builder.Services.AddSwaggerDoc(
     removeEmptySchemas: true,
     tagIndex: 0);
 builder.Services.AddSingleton<IConfigurationService>(configurationService);
-builder.Services.AddTransient<IFeedRepository, FeedRepository>();
+builder.Services.AddSingleton<IArtifactValidationService, ArtifactValidationService>();
+builder.Services.AddSingleton<IArtifactStorageService, ArtifactStorageService>();
+builder.Services.AddScoped<IFeedRepository, FeedRepository>();
+builder.Services.AddScoped<IPackageRepository, PackageRepository>();
+builder.Services.AddScoped<IArtifactRepository, ArtifactRepository>();
 
 var app = builder.Build();
 app.UseDefaultExceptionHandler();
@@ -34,6 +38,7 @@ app.UseFastEndpoints(
     {
         c.Endpoints.ShortNames = true;
         c.Versioning.Prefix = "v";
+        c.Endpoints.Configurator = e => e.AllowAnonymous();
     });
 app.UseSwaggerGen(
     c => c.Path = "/api/swagger/{documentName}",

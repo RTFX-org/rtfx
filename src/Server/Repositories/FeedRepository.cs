@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
 using Rtfx.Server.Database.Entities;
-using Rtfx.Server.Models.Dtos;
 
 namespace Rtfx.Server.Repositories;
 
@@ -65,5 +64,10 @@ public class FeedRepository : IFeedRepository
     public async Task<Feed?> TryGetFeedAsync(string feedName, CancellationToken ct)
     {
         return await _database.Feeds.FirstOrDefaultAsync(x => x.Name == feedName, ct);
+    }
+
+    public async Task<long> TryGetFeedIdAsync(string feedName, CancellationToken ct)
+    {
+        return await _database.Feeds.Where(x => x.Name == feedName).Select(x => x.FeedId).FirstOrDefaultAsync(ct);
     }
 }

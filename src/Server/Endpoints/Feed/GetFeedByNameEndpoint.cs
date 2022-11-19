@@ -29,9 +29,7 @@ public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNam
     public override void Configure()
     {
         Get("/api/feeds/feed");
-        AllowAnonymous();
         Description(x => x
-            .WithName("GetFeedByName")
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest)
             .ProducesProblemFE(Status404NotFound));

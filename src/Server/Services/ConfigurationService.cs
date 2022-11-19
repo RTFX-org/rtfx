@@ -1,9 +1,8 @@
-﻿using Rtfx.Server.Database;
-using Rtfx.Server.Models;
+﻿using Rtfx.Server.Models;
 
 namespace Rtfx.Server.Services;
 
-public class ConfigurationService : IConfigurationService
+public sealed class ConfigurationService : IConfigurationService
 {
     private readonly IConfiguration _configuration;
     private readonly string _basePath;

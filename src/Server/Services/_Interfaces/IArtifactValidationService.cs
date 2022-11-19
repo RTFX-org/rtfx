@@ -4,5 +4,5 @@ namespace Rtfx.Server.Services;
 
 public interface IArtifactValidationService
 {
-    Task<ArtifactValidationResult> ValidateAsync(string artifactPath);
+    Task<ArtifactValidationResult> ValidateAsync(string artifactFileName, Stream artifactStream);
 }
