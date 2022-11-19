@@ -1,0 +1,12 @@
+{
+  "name": "rtfx-app",
+  "description": "RTFX Electron App",
+  "version": "0.0.1",
+  "main": "main.js",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "electron-localshortcut": "^3.2.1"
+  },
+  "devDependencies": {}
+}

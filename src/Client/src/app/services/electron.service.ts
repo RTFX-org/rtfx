@@ -1,16 +1,19 @@
-import { Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-const electron = (<any>window).require('electron');
-
-@Inject({ providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class ElectronService {
+  constructor() {
+    const a = (<any>window).myAPI.doAThing();
+    console.log(a);
+  }
+
   public minimize(): void {
-    electron.ipcRenderer.send('minimize');
+    (<any>window).myWindow.minimize();
   }
   public maximize(): void {
-    electron.ipcRenderer.send('maximize');
+    (<any>window).myWindow.maximize();
   }
   public close(): void {
-    electron.ipcRenderer.send('close');
+    (<any>window).myWindow.close();
   }
 }

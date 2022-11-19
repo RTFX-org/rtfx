@@ -2,10 +2,11 @@ appId: com.rtfx.client
 files:
   - ./rtfx/**/*
   - ./main.js
+  - ./preload.js
 directories:
   output: bundle
-  app: electron
-  buildResources: electron/build
+  app: app
+  buildResources: app/build
 win:
   target:
     - target: portable
