@@ -4,7 +4,7 @@ import { ElectronService } from '../services/electron.service';
 @Component({
   selector: 'app-frame',
   templateUrl: './frame.component.html',
-  styleUrls: ['./frame.component.scss'],
+  styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit {
   public version = '0.0.1';
@@ -14,7 +14,14 @@ export class FrameComponent implements OnInit {
     this._electronService = electronService;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    (async () => {
+      const settings = await this._electronService.getSettings();
+      settings.something = 'something';
+      await this._electronService.setSettings(settings);
+      console.log(settings);
+    })();
+  }
 
   public minimize(): void {
     this._electronService.minimize();

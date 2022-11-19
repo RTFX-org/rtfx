@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ElectronService {
-  constructor() {
-    const a = (<any>window).myAPI.doAThing();
-    console.log(a);
-  }
+  constructor() {}
 
   public minimize(): void {
     (<any>window).myWindow.minimize();
@@ -15,5 +12,12 @@ export class ElectronService {
   }
   public close(): void {
     (<any>window).myWindow.close();
+  }
+
+  public async getSettings(): Promise<any> {
+    return (<any>window).settings.get();
+  }
+  public async setSettings(settings: any): Promise<void> {
+    return (<any>window).settings.set(settings);
   }
 }

@@ -1,10 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as url from 'url';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as electronLocalshortcut from 'electron-localshortcut';
 
 let mainWindow: BrowserWindow | null;
+let settings: any;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -66,4 +67,22 @@ ipcMain.handle('maximize', () => {
 });
 ipcMain.handle('close', () => {
   mainWindow!.close();
+});
+
+ipcMain.handle('getSettings', async () => {
+  if (!settings) {
+    if (!fs.existsSync('settings.json')) {
+      settings = {
+        repoRoot: ''
+      };
+      await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
+    }
+    settings = JSON.parse(await fs.promises.readFile('settings.json', 'utf8'));
+  }
+  return settings;
+});
+
+ipcMain.handle('setSettings', async (event, newSettings) => {
+  settings = newSettings;
+  await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
 });
