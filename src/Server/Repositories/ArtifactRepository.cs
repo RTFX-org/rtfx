@@ -63,6 +63,7 @@ public class ArtifactRepository : IArtifactRepository
             .Include(x => x.SourceVersions)
             .Include(x => x.Metadata)
             .Include(x => x.Package)
-            .Include(x => x.Package.Feed);
+            .Include(x => x.Package.Feed)
+            .AsSplitQuery();
     }
 }
