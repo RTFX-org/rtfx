@@ -61,7 +61,9 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
     public override async Task HandleAsync(UploadArtifactRequest req, CancellationToken ct)
     {
         using var artifactStream = req.Artifact.OpenReadStream();
+
         var validationResult = await _artifactValidationService.ValidateAsync(req.Artifact.FileName, artifactStream);
+        artifactStream.Seek(0, SeekOrigin.Begin);
 
         if (!validationResult.IsValid)
         {
@@ -70,9 +72,7 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             return;
         }
 
-        artifactStream.Seek(0, SeekOrigin.Begin);
         var metadata = validationResult.Metadata!;
-
         var (feedId, packageId, artifactId) = await _artifactRepository.TryGetIdsAsync(metadata.FeedName, metadata.PackageName, metadata.SourceHash, ct);
 
         if (feedId <= 0 && req.CreateFeedAndPackage != true)
@@ -83,13 +83,13 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
 
         if (packageId <= 0 && req.CreateFeedAndPackage != true)
         {
-            await this.SendErrorAsync(Status409Conflict, $"A package with the name \"{metadata.PackageName}\" does not exist in feed \"{metadata.FeedName}\".", ct);
+            await this.SendErrorAsync(Status409Conflict, ErrorMessages.PackageWithNameDoesNotExist(metadata.FeedName, metadata.PackageName), ct);
             return;
         }
 
         if (artifactId > 0 && req.OverwriteExisting != true)
         {
-            await this.SendErrorAsync(Status409Conflict, $"An artifact with source hash \"{metadata.SourceHash}\" already exists in the package \"{metadata.PackageName}\" in feed \"{metadata.FeedName}\".", ct);
+            await this.SendErrorAsync(Status409Conflict, ErrorMessages.ArtifactAlreadyExists(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
             return;
         }
 
