@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('myAPI', {
   doAThing: () => {
     console.log('doAThing');
     return 'doAThing';
-  },
+  }
 });
 contextBridge.exposeInMainWorld('myWindow', {
   minimize: () => {
@@ -16,5 +16,5 @@ contextBridge.exposeInMainWorld('myWindow', {
   },
   close: () => {
     ipcRenderer.invoke('close');
-  },
+  }
 });

@@ -12,9 +12,9 @@ function createWindow() {
     height: 700,
     webPreferences: {
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js')
     },
-    frame: false,
+    frame: false
   });
 
   const compiledPath = path.join(__dirname, `./rtfx/index.html`);
@@ -25,7 +25,7 @@ function createWindow() {
     url.format({
       pathname: usedPath,
       protocol: 'file:',
-      slashes: true,
+      slashes: true
     })
   );
   // Open the DevTools. If you don't want you delete this
@@ -36,11 +36,7 @@ function createWindow() {
   });
 
   mainWindow.on('focus', () => {
-    electronLocalshortcut.register(
-      mainWindow!,
-      ['CommandOrControl+R', 'CommandOrControl+Shift+R', 'F5'],
-      () => {}
-    );
+    electronLocalshortcut.register(mainWindow!, ['CommandOrControl+R', 'CommandOrControl+Shift+R', 'F5'], () => {});
   });
 
   mainWindow.on('blur', () => {
