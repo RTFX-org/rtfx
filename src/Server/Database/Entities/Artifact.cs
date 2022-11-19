@@ -15,9 +15,14 @@ public class Artifact
     public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
     [Required]
+    public DateTime LastModifierDate { get; set; } = DateTime.UtcNow;
+
+    [Required]
     public required Package Package { get; init; }
 
     public List<ArtifactTag> Tags { get; init; } = new();
+
+    public List<ArtifactSourceVersion> SourceVersions { get; init; } = new();
 
     public List<ArtifactMetadata> Metadata { get; init; } = new();
 }

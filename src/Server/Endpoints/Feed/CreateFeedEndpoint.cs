@@ -10,14 +10,12 @@ public sealed record CreateFeedResponse(FeedDto Feed);
 
 public sealed class CreateFeedRequestValidator : Validator<CreateFeedRequest>
 {
-    private static readonly Regex FeedNameRegex = new("""^[a-zA-Z\.\-_][a-zA-Z0-9\.\-_]*$""", RegexOptions.Compiled, TimeSpan.FromSeconds(2));
-
     public CreateFeedRequestValidator()
     {
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(255)
-            .Matches(FeedNameRegex)
+            .Matches(RegularExpressions.FeedName())
             .WithMessage("The feed name cannot start with a digit and can only contain the following characters: a-z A-Z 0-9 . - _");
     }
 }

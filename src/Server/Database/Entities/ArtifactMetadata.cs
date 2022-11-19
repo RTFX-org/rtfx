@@ -12,9 +12,8 @@ public class ArtifactMetadata
     [MaxLength(100)]
     public required string Name { get; init; }
 
-    [Required]
     [MaxLength(1024)]
-    public required string Value { get; set; }
+    public string? Value { get; set; }
 
     [Required]
     public required Artifact Artifact { get; init; }

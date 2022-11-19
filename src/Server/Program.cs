@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
 using Rtfx.Server.Repositories;
+using Rtfx.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDatabaseContext(builder.Configuration);
+var configurationService = new ConfigurationService(builder.Configuration);
+builder.Services.AddDatabaseContext(configurationService);
 builder.Services.AddFastEndpoints(
     o =>
     {
@@ -21,6 +23,7 @@ builder.Services.AddSwaggerDoc(
     shortSchemaNames: true,
     removeEmptySchemas: true,
     tagIndex: 0);
+builder.Services.AddSingleton<IConfigurationService>(configurationService);
 builder.Services.AddTransient<IFeedRepository, FeedRepository>();
 
 var app = builder.Build();
