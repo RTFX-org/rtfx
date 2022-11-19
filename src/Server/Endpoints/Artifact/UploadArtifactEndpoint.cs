@@ -143,6 +143,6 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             statusCode = Status200OK;
         }
 
-        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(HttpContext, artifact, feedId, metadata.FeedName, metadata.PackageName)), statusCode, ct);
+        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(HttpContext, artifact)), statusCode, ct);
     }
 }

@@ -13,14 +13,9 @@ public class ArtifactRepository : IArtifactRepository
         _database = database;
     }
 
-    public async Task<Artifact> GetArtifactWithMetadataAsync(long artifactId, CancellationToken ct)
+    public async Task<Artifact?> TryGetArtifactWithMetadataAsync(long artifactId, CancellationToken ct)
     {
-        return await _database.Artifacts
-            .Where(x => x.ArtifactId == artifactId)
-            .Include(x => x.Tags)
-            .Include(x => x.SourceVersions)
-            .Include(x => x.Metadata)
-            .FirstAsync();
+        return await GetArtifactWithMetadataQuery(artifactId).FirstOrDefaultAsync(ct);
     }
 
     public async Task<long> InsertArtifact(Artifact artifact, CancellationToken ct)
@@ -54,9 +49,20 @@ public class ArtifactRepository : IArtifactRepository
 
     public async Task<Artifact> UpdateArtifactAsync(long artifactId, Action<Artifact> updateAction, CancellationToken ct)
     {
-        var artifact = await GetArtifactWithMetadataAsync(artifactId, ct);
+        var artifact = await GetArtifactWithMetadataQuery(artifactId).FirstAsync(ct);
         updateAction(artifact);
         await _database.SaveChangesAsync(ct);
         return artifact;
+    }
+
+    private IQueryable<Artifact> GetArtifactWithMetadataQuery(long artifactId)
+    {
+        return _database.Artifacts
+            .Where(x => x.ArtifactId == artifactId)
+            .Include(x => x.Tags)
+            .Include(x => x.SourceVersions)
+            .Include(x => x.Metadata)
+            .Include(x => x.Package)
+            .Include(x => x.Package.Feed);
     }
 }

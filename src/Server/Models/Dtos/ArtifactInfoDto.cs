@@ -28,14 +28,14 @@ public sealed class ArtifactInfoDto
     [JsonPropertyName("_links")]
     public required ArtifactLinksDto Links { get; init; }
 
-    public static ArtifactInfoDto Create(HttpContext httpContext, Db.Artifact artifact, long feedId, string feedName, string packageName)
+    public static ArtifactInfoDto Create(HttpContext httpContext, Db.Artifact artifact)
     {
         return new ArtifactInfoDto
         {
-            FeedId = feedId,
-            FeedName = feedName,
-            PackageId = artifact.PackageId,
-            PackageName = packageName,
+            FeedId = artifact.Package.Feed.FeedId,
+            FeedName = artifact.Package.Feed.Name,
+            PackageId = artifact.Package.PackageId,
+            PackageName = artifact.Package.Name,
             ArtifactId = artifact.ArtifactId,
             SourceHash = artifact.SourceHash.ToHexString(),
             Tags = artifact.Tags.Select(x => x.Tag).ToArray(),
@@ -48,31 +48,7 @@ public sealed class ArtifactInfoDto
                     })
                 .ToArray(),
             Metadata = artifact.Metadata.ToDictionary(x => x.Name, x => x.Value),
-            Links = ArtifactLinksDto.Create(httpContext, feedId, artifact.PackageId, artifact.ArtifactId),
-        };
-    }
-
-    public static ArtifactInfoDto Create(HttpContext httpContext, ArtifactMetadata artifact, long feedId, long packageId, long artifactId)
-    {
-        return new ArtifactInfoDto
-        {
-            FeedId = feedId,
-            FeedName = artifact.FeedName,
-            PackageId = packageId,
-            PackageName = artifact.PackageName,
-            ArtifactId = artifactId,
-            SourceHash = artifact.SourceHash,
-            Tags = artifact.Tags,
-            SourceVersions = artifact.SourceVersions
-                .Select(x =>
-                    new SourceVersionDto
-                    {
-                        Branch = x.Branch,
-                        Commit = x.Commit,
-                    })
-                .ToArray(),
-            Metadata = artifact.Metadata,
-            Links = ArtifactLinksDto.Create(httpContext, feedId, packageId, artifactId),
+            Links = ArtifactLinksDto.Create(httpContext, artifact.Package.Feed.FeedId, artifact.Package.PackageId, artifact.ArtifactId),
         };
     }
 }
