@@ -1,1 +1,22 @@
-<p>frame works!</p>
+<div class="main-container">
+  <div class="app-bar">
+    <div class="section left"></div>
+    <div class="section center">
+      <span>RTFX v{{ version }}</span>
+    </div>
+    <div class="section right">
+      <button class="window-button" (click)="minimize()">
+        <i class="fa-regular fa-window-minimize"></i>
+      </button>
+      <button class="window-button" (click)="maximize()">
+        <i class="fa-regular fa-window-maximize"></i>
+      </button>
+      <button class="window-button close" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

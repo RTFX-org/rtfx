@@ -1,0 +1,46 @@
+@import "all";
+$appBarHeight: 48px;
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  .app-bar {
+    height: $appBarHeight;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background: $barColor;
+    .section {
+      width: 100%;
+      &.center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      &.right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        .window-button {
+          background: $barColor;
+          width: $appBarHeight;
+          height: $appBarHeight;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          &:hover {
+            background: $barColorHover;
+            &.close {
+              background: $barColorHoverClose;
+            }
+          }
+        }
+      }
+    }
+  }
+  .main-content {
+    height: calc(100% - $appBarHeight);
+  }
+}
