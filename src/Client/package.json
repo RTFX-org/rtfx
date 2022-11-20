@@ -15,7 +15,7 @@
     "copy-app": "yarn copy-dist",
     "start-app": "set NODE_ENV=development && electron ./app/main.js --no-sandbox",
     "app:dir": "yarn build-electron && yarn copy-app && electron-builder --dir",
-    "app:dist": "yarn build-electron && yarn copy-app && electron-builder -w"
+    "app:dist": "yarn build-electron && yarn copy-app && electron-builder -wl"
   },
   "private": true,
   "dependencies": {
