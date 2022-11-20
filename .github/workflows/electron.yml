@@ -21,4 +21,4 @@ jobs:
             electron-dist/rtfx*.snap
             electron-dist/rtfx*.AppImage
           retention-days: 5
-        if-no-files-found: error
+          if-no-files-found: error
