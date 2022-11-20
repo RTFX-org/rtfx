@@ -5,8 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Electron
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
       - name: Build Docker Container
         run: docker build ./src/Client/.devcontainer -t electron-builder
+      - name: Run Docker Container
+        run: docker run -v $(pwd):/app electron-builder
       - name: Build Angular App
         run: docker exec electron-builder yarn run build
       - name: Build and Package Electron App
