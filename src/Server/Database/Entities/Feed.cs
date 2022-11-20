@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace Rtfx.Server.Database.Entities;
 
+[DebuggerDisplay("[{FeedId}] {Name}")]
 public class Feed
 {
-    public Guid FeedId { get; init; }
+    public long FeedId { get; init; }
 
     [Required]
     [MaxLength(255)]

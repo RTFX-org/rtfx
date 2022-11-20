@@ -6,7 +6,7 @@ namespace Rtfx.Server.Database;
 
 public abstract class DatabaseContext : DbContext
 {
-    private static readonly ValueConverter<DateTime, DateTime>  _dateTimeConverter = new(
+    private static readonly ValueConverter<DateTime, DateTime> _dateTimeConverter = new(
         v => v.ToUniversalTime(),
         v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
@@ -16,16 +16,16 @@ public abstract class DatabaseContext : DbContext
 
     private readonly ILoggerFactory _loggerFactory;
 
+    protected DatabaseContext(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+    }
+
     public DbSet<Feed> Feeds { get; set; }
     public DbSet<Package> Packages { get; set; }
     public DbSet<Artifact> Artifacts { get; set; }
     public DbSet<ArtifactMetadata> ArtifactMetdata { get; set; }
     public DbSet<ArtifactTag> ArtifactTags { get; set; }
-
-    public DatabaseContext(ILoggerFactory loggerFactory)
-    {
-        _loggerFactory = loggerFactory;
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,17 +65,5 @@ public abstract class DatabaseContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseLoggerFactory(_loggerFactory);
-    }
-}
-
-public static class ServiceCollectionExtensions
-{
-    public static IServiceCollection AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
-    {
-        return configuration["Database:Type"]?.ToLowerInvariant() switch
-        {
-            "sqlite" => services.AddDbContext<DatabaseContext, SqliteDatabaseContext>(),
-            _ => throw new NotSupportedException($"The database type \"{configuration["Database:Type"] ?? "(null)"}\" is not supported."),
-        };
     }
 }

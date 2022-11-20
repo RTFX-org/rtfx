@@ -1,12 +1,13 @@
 ﻿using Rtfx.Server.Database.Entities;
-using Rtfx.Server.Extensions;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace Rtfx.Server.Models.Dtos;
 
+[DebuggerDisplay("{Name}")]
 public sealed class FeedDto
 {
-    public required Guid Id { get; init; }
+    public required long Id { get; init; }
 
     public required string Name { get; init; }
 
@@ -21,7 +22,7 @@ public sealed class FeedDto
 
         return new FeedDto
         {
-            Id= feed.FeedId,
+            Id = feed.FeedId,
             Name = feed.Name,
             CreationDate = feed.CreationDate,
             Links = new()

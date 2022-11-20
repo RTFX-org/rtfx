@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rtfx.Server.Database;
 
@@ -10,9 +11,11 @@ using Rtfx.Server.Database;
 namespace Rtfx.Server.Database.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteDatabaseContext))]
-    partial class SqliteDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20221116214711_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
@@ -24,9 +27,6 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LastModifierDate")
                         .HasColumnType("TEXT");
 
                     b.Property<long>("PackageId")
@@ -56,37 +56,13 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
+                        .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
                     b.HasKey("ArtifactId", "Name");
 
                     b.ToTable("ArtifactMetdata");
-                });
-
-            modelBuilder.Entity("Rtfx.Server.Database.Entities.ArtifactSourceVersion", b =>
-                {
-                    b.Property<long>("ArtifactSourceVersionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("ArtifactId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Branch")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("Commit")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("ArtifactSourceVersionId");
-
-                    b.HasIndex("ArtifactId");
-
-                    b.ToTable("ArtifactSourceVersion");
                 });
 
             modelBuilder.Entity("Rtfx.Server.Database.Entities.ArtifactTag", b =>
@@ -174,17 +150,6 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
                     b.Navigation("Artifact");
                 });
 
-            modelBuilder.Entity("Rtfx.Server.Database.Entities.ArtifactSourceVersion", b =>
-                {
-                    b.HasOne("Rtfx.Server.Database.Entities.Artifact", "Artifact")
-                        .WithMany("SourceVersions")
-                        .HasForeignKey("ArtifactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Artifact");
-                });
-
             modelBuilder.Entity("Rtfx.Server.Database.Entities.ArtifactTag", b =>
                 {
                     b.HasOne("Rtfx.Server.Database.Entities.Artifact", "Artifact")
@@ -210,8 +175,6 @@ namespace Rtfx.Server.Database.Migrations.Sqlite
             modelBuilder.Entity("Rtfx.Server.Database.Entities.Artifact", b =>
                 {
                     b.Navigation("Metadata");
-
-                    b.Navigation("SourceVersions");
 
                     b.Navigation("Tags");
                 });

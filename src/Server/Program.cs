@@ -1,21 +1,45 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
+using Rtfx.Server.Repositories;
+using Rtfx.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDatabaseContext(builder.Configuration);
-builder.Services.AddFastEndpoints(o =>
-{
-    o.SourceGeneratorDiscoveredTypes = DiscoveredTypes.All;
-});
-builder.Services.AddSwaggerDoc(s =>
-{
-    s.DocumentName = "v1";
-});
+var configurationService = new ConfigurationService(builder.Configuration);
+builder.Services.AddDatabaseContext(configurationService);
+builder.Services.AddFastEndpoints(
+    o =>
+    {
+        o.SourceGeneratorDiscoveredTypes = DiscoveredTypes.All;
+    });
+builder.Services.AddSwaggerDoc(
+    s =>
+    {
+        s.DocumentName = "v0";
+        s.Title = "RTFX API";
+        s.Version = "v0.0";
+    },
+    addJWTBearerAuth: false,
+    shortSchemaNames: true,
+    removeEmptySchemas: true,
+    tagIndex: 0);
+builder.Services.AddSingleton<IConfigurationService>(configurationService);
+builder.Services.AddSingleton<IArtifactValidationService, ArtifactValidationService>();
+builder.Services.AddSingleton<IArtifactStorageService, ArtifactStorageService>();
+builder.Services.AddScoped<IFeedRepository, FeedRepository>();
+builder.Services.AddScoped<IPackageRepository, PackageRepository>();
+builder.Services.AddScoped<IArtifactRepository, ArtifactRepository>();
 
 var app = builder.Build();
+app.UseDefaultExceptionHandler();
 app.UseAuthorization();
-app.UseFastEndpoints();
+app.UseFastEndpoints(
+    c =>
+    {
+        c.Endpoints.ShortNames = true;
+        c.Versioning.Prefix = "v";
+        c.Endpoints.Configurator = e => e.AllowAnonymous();
+    });
 app.UseSwaggerGen(
     c => c.Path = "/api/swagger/{documentName}",
     c =>
