@@ -1,5 +1,7 @@
 FROM rtfx-builder-base
 
+RUN ls -R
+
 WORKDIR /app
 
 # Build the Angular app
