@@ -10,6 +10,6 @@ jobs:
       - name: Build rtfx-builder-base Docker Image
         run: docker build ./src/Client/.devcontainer -t rtfx-builder-base
       - name: Build rtfx-builder Docker Image
-        run: docker build ./src/Client/build -t rtfx-builder
+        run: docker build ./src/Client -t rtfx-builder
       - name: Run rtfx-builder Docker Image
-        run: docker run -v ${PWD}/src/Client:/app rtfx-builder --name builder-container
+        run: docker run rtfx-builder --name builder-container
