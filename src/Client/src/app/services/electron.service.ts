@@ -1,23 +1,14 @@
 import { Injectable } from '@angular/core';
+import { ElectronEvent, EventFunc, EventName, FuncArgs, FuncReturn } from '../models/electron.model';
 
 @Injectable({ providedIn: 'root' })
 export class ElectronService {
   constructor() {}
 
-  public minimize(): void {
-    (<any>window).myWindow.minimize();
-  }
-  public maximize(): void {
-    (<any>window).myWindow.maximize();
-  }
-  public close(): void {
-    (<any>window).myWindow.close();
-  }
-
-  public async getSettings(): Promise<any> {
-    return (<any>window).settings.get();
-  }
-  public async setSettings(settings: any): Promise<void> {
-    return (<any>window).settings.set(settings);
+  public send<T extends ElectronEvent, A extends EventName>(
+    event: A,
+    ...args: FuncArgs<EventFunc<T, A>>
+  ): FuncReturn<EventFunc<T, A>> {
+    return (<any>window).rtfxApi.send(event, ...args);
   }
 }

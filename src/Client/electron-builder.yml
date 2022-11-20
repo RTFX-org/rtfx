@@ -2,6 +2,9 @@ appId: com.rtfx.client
 files:
   - ./rtfx/**/*
   - ./main.js
+  - ./event-handler.js
+  - ../src/app/models/app-settings.js
+  - ../src/app/models/electron.model.js
   - ./preload.js
 directories:
   output: bundle

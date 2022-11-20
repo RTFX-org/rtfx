@@ -44,5 +44,7 @@ Thumbs.db
 # electron
 app/main.js*
 app/preload.js*
+app/event-handler.js*
+src/app/**/*.js*
 app/rtfx
 bundle

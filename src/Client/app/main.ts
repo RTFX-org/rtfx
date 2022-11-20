@@ -3,9 +3,11 @@ import * as url from 'url';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as electronLocalshortcut from 'electron-localshortcut';
+import { EventHandler } from './event-handler';
+import { AppSettings } from '../src/app/models/app-settings';
 
 let mainWindow: BrowserWindow | null;
-let settings: any;
+let settings: AppSettings;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -55,25 +57,17 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow();
 });
 
-ipcMain.handle('minimize', () => {
-  mainWindow!.minimize();
-});
-ipcMain.handle('maximize', () => {
-  if (mainWindow!.isMaximized()) {
-    mainWindow!.restore();
-  } else {
-    mainWindow!.maximize();
-  }
-});
-ipcMain.handle('close', () => {
-  mainWindow!.close();
-});
-
-ipcMain.handle('getSettings', async () => {
+const eventHandler = new EventHandler(ipcMain);
+eventHandler.on('app:minimize', async () => mainWindow?.minimize());
+eventHandler.on('app:maximize', async () => mainWindow?.maximize());
+eventHandler.on('app:restore', async () => mainWindow?.restore());
+eventHandler.on('app:close', async () => mainWindow?.close());
+eventHandler.on('app:quit', async () => app.quit());
+eventHandler.on('settings:get', async () => {
   if (!settings) {
     if (!fs.existsSync('settings.json')) {
       settings = {
-        repoRoot: ''
+        repoRootPath: ''
       };
       await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
     }
@@ -81,8 +75,7 @@ ipcMain.handle('getSettings', async () => {
   }
   return settings;
 });
-
-ipcMain.handle('setSettings', async (event, newSettings) => {
+eventHandler.on('settings:set', async (newSettings: AppSettings) => {
   settings = newSettings;
   await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
 });
