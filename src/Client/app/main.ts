@@ -9,6 +9,18 @@ import { AppSettings } from '../src/app/models/app-settings';
 let mainWindow: BrowserWindow | null;
 let settings: AppSettings;
 
+const env = process.env['NODE_ENV'] || 'development';
+if (env === 'development') {
+  try {
+    require('electron-reloader')(module, {
+      debug: true,
+      watchRenderer: true
+    });
+  } catch (_) {
+    console.log('Error');
+  }
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
@@ -22,15 +34,20 @@ function createWindow() {
 
   const compiledPath = path.join(__dirname, `./rtfx/index.html`);
   const servePath = path.join(__dirname, `../dist/rtfx/index.html`);
-  const usedPath = fs.existsSync(compiledPath) ? compiledPath : servePath;
+  const usedPath = env === 'development' ? servePath : compiledPath;
 
-  mainWindow.loadURL(
-    url.format({
-      pathname: usedPath,
-      protocol: 'file:',
-      slashes: true
-    })
-  );
+  if (env === 'development') {
+    mainWindow.loadURL('http://localhost:4200');
+  } else {
+    mainWindow.loadURL(
+      url.format({
+        pathname: usedPath,
+        protocol: 'file:',
+        slashes: true
+      })
+    );
+  }
+
   // Open the DevTools. If you don't want you delete this
   mainWindow.webContents.openDevTools();
 
@@ -78,4 +95,13 @@ eventHandler.on('settings:get', async () => {
 eventHandler.on('settings:set', async (newSettings: AppSettings) => {
   settings = newSettings;
   await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
+});
+eventHandler.on('app:move', async (x: number, y: number) => {
+  if (mainWindow?.isMaximized) {
+    mainWindow?.restore();
+  }
+  const position = mainWindow?.getPosition();
+  if (position) {
+    mainWindow?.setPosition(position[0] + x, position[1] + y);
+  }
 });

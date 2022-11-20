@@ -30,4 +30,8 @@ export class WindowService {
   public quit(): Promise<void> {
     return this._electronService.send('app:quit');
   }
+
+  public move(x: number, y: number): Promise<void> {
+    return this._electronService.send('app:move', x, y);
+  }
 }
