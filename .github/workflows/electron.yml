@@ -1,0 +1,20 @@
+on: [push]
+
+jobs:
+  build-electron:
+    runs-on: ubuntu-latest
+    name: Build Electron
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Build rtfx-builder-base Docker Image
+        run: docker build ./src/Client/.devcontainer -t rtfx-builder-base
+      - name: Build rtfx-builder Docker Image
+        run: docker build ./src/Client -t rtfx-builder
+      - name: Copy Electron Build to Host
+        run: docker cp $(docker create rtfx-builder):/app/bundle ./electron-dist
+      - uses: actions/upload-artifact@v3
+        with:
+          name: electron-dist
+          path: electron-dist
+          retention-days: 5

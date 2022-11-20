@@ -1,0 +1,27 @@
+appId: com.rtfx.client
+files:
+  - ./rtfx/**/*
+  - ./main.js
+  - ./event-handler.js
+  - ../src/app/models/app-settings.js
+  - ../src/app/models/electron.model.js
+  - ./preload.js
+directories:
+  output: bundle
+  app: app
+  buildResources: app/build
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+mac:
+  category: public.app-category.developer-tools
+linux:
+  target:
+    - target: Snap
+      arch:
+        - x64
+    - target: AppImage
+      arch:
+        - x64

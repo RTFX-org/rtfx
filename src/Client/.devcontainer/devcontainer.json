@@ -1,0 +1,24 @@
+{
+  "name": "electron",
+  "extensions": [
+    "angular.ng-template",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode-remote.remote-wsl",
+    "ms-azuretools.vscode-docker",
+    "idleberg.electron-builder",
+    "dbaeumer.vscode-eslint",
+    "github.copilot",
+    "firsttris.vscode-jest-runner",
+    "esbenp.prettier-vscode",
+    "mrmlnc.vscode-scss",
+    "dkneeland.yarn-task-provider",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint"
+  ],
+  "context": "..",
+  "dockerFile": "./Dockerfile",
+  "containerEnv": {
+    "DISPLAY": "unix:0"
+  },
+  "mounts": ["source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"]
+}
