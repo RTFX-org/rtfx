@@ -6,8 +6,6 @@ export type FuncArgs<A> = A extends (...args: infer Args) => any ? Args : never;
 export type FuncReturn<A> = A extends (args: any) => infer Return ? Promise<Return> : never;
 export type EventFuncAsync<F> = (...args: FuncArgs<F>) => FuncReturn<F>;
 
-// export type ExtractPayload<A extends WsCommunication, T> = FlattenUnion<A extends { name: T } ? ExtractPayloadInt<A> : never>;
-
 export type ExtractFunc<A> = A extends { func: any } ? A['func'] : never;
 
 export type ElectronEvent =
