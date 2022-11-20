@@ -12,7 +12,7 @@ jobs:
       - name: Build rtfx-builder Docker Image
         run: docker build ./src/Client -t rtfx-builder
       - name: Copy Electron Build to Host
-        run: docker cp rtfx-builder:/app/bundle ./electron-dist
+        run: docker cp $(docker create rtfx-builder):/app/bundle ./electron-dist
       - uses: actions/upload-artifact@v3
         with:
           name: electron-dist
