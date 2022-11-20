@@ -16,7 +16,7 @@
     "davidanson.vscode-markdownlint"
   ],
   "context": "..",
-  "dockerFile": "../Dockerfile",
+  "dockerFile": "./Dockerfile",
   "containerEnv": {
     "DISPLAY": "unix:0"
   },
