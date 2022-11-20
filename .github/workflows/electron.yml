@@ -7,9 +7,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: Build Docker Container
-        run: docker build ./src/Client -t builder-image
-      - name: Build Angular App in Container
-        run: docker run -v $(pwd):/app --name electron-builder builder-image yarn run build
-      - name: Build and Package Electron App in Container
-        run: docker run -v $(pwd):/app --name electron-builder builder-image yarn run app:dist
+      - name: Build rtfx-builder-base Docker Image
+        run: docker build ./src/Client/.devcontainer -t rtfx-builder-base
+      - name: Build rtfx-builder Docker Image
+        run: docker build ./src/Client/build -t rtfx-builder
+      - name: Run rtfx-builder Docker Image
+        run: docker run -v ${PWD}/src/Client:/app rtfx-builder --name builder-container
