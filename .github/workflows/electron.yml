@@ -6,7 +6,7 @@ jobs:
     name: Build Electron
     steps:
       - name: Build Docker Container
-        run: docker build src/Client/.devcontainer -t electron-builder
+        run: docker build ./src/Client/.devcontainer -t electron-builder
       - name: Build Angular App
         run: docker exec electron-builder yarn run build
       - name: Build and Package Electron App
