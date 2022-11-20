@@ -10,7 +10,7 @@ jobs:
       - name: Build Docker Container
         run: docker build ./src/Client -t electron-builder
       - name: Run Docker Container
-        run: docker run -v $(pwd):/app electron-builder --name electron-builder
+        run: docker run -v $(pwd):/app --name electron-builder electron-builder
       - name: Build Angular App
         run: docker exec electron-builder yarn run build
       - name: Build and Package Electron App
