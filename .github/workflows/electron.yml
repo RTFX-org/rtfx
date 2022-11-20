@@ -8,10 +8,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Build Docker Container
-        run: docker build ./src/Client -t electron-builder
-      - name: Run Docker Container
-        run: docker run -v $(pwd):/app --name electron-builder electron-builder
-      - name: Build Angular App
-        run: docker exec electron-builder yarn run build
-      - name: Build and Package Electron App
-        run: docker exec electron-builder yarn run yarn app:dist
+        run: docker build ./src/Client -t builder-image
+      - name: Build Angular App in Container
+        run: docker run -v $(pwd):/app --name electron-builder builder-image yarn run build
+      - name: Build and Package Electron App in Container
+        run: docker run -v $(pwd):/app --name electron-builder builder-image yarn run app:dist
