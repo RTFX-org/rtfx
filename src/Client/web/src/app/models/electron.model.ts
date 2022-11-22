@@ -30,10 +30,6 @@ export type ElectronEvent =
       func: () => void;
     }
   | {
-      name: 'app:move';
-      func: (x: number, y: number) => void;
-    }
-  | {
       name: 'settings:get';
       func: () => AppSettings;
     }

@@ -98,12 +98,3 @@ eventHandler.on('settings:set', async (newSettings: AppSettings) => {
   settings = newSettings;
   await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
 });
-eventHandler.on('app:move', async (x: number, y: number) => {
-  if (mainWindow?.isMaximized) {
-    mainWindow?.restore();
-  }
-  const position = mainWindow?.getPosition();
-  if (position) {
-    mainWindow?.setPosition(position[0] + x, position[1] + y);
-  }
-});

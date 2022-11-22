@@ -1,5 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { ElectronService } from '../services/electron.service';
+import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
 import { WindowService } from '../services/window.service';
 
@@ -11,8 +10,6 @@ import { WindowService } from '../services/window.service';
 export class FrameComponent implements OnInit {
   private readonly _windowService: WindowService;
   private readonly _settingsService: SettingsService;
-
-  private _dragging: boolean = false;
 
   public version = '0.0.1';
 
@@ -38,22 +35,5 @@ export class FrameComponent implements OnInit {
   }
   public close(): void {
     this._windowService.close();
-  }
-
-  public dragStart() {
-    this._dragging = true;
-  }
-
-  @HostListener('document:mouseup')
-  public dragEnd() {
-    this._dragging = false;
-  }
-
-  @HostListener('document:mousemove', ['$event'])
-  public dragMove(event: MouseEvent) {
-    if (this._dragging) {
-      this._windowService.move(event.movementX, event.movementY);
-      event.preventDefault();
-    }
   }
 }

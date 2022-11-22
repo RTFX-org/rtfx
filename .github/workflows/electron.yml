@@ -6,7 +6,7 @@ jobs:
     name: Build Electron
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.5.0
       - name: Build rtfx-builder-base Docker Image
         run: docker build .devcontainer -t rtfx-builder-base
         working-directory: ./src/Client

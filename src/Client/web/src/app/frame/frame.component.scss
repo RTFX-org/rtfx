@@ -1,4 +1,4 @@
-@import "all";
+@import 'all';
 $appBarHeight: 48px;
 
 .main-container {
@@ -12,6 +12,7 @@ $appBarHeight: 48px;
     display: flex;
     justify-content: space-between;
     background: $barColor;
+    -webkit-app-region: drag; // Electron window drag
     .section {
       width: 100%;
       &.center {
@@ -20,6 +21,7 @@ $appBarHeight: 48px;
         justify-content: center;
       }
       &.right {
+        -webkit-app-region: no-drag; // Electron window drag
         display: flex;
         align-items: center;
         justify-content: flex-end;
