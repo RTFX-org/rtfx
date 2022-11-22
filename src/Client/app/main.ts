@@ -9,7 +9,7 @@ import { AppSettings } from '../src/app/models/app-settings';
 let mainWindow: BrowserWindow | null;
 let settings: AppSettings;
 
-const env = process.env['NODE_ENV'] || 'development';
+const env = process.env['NODE_ENV'] || 'production';
 if (env === 'development') {
   try {
     require('electron-reloader')(module, {
@@ -32,16 +32,13 @@ function createWindow() {
     frame: false
   });
 
-  const compiledPath = path.join(__dirname, `./rtfx/index.html`);
-  const servePath = path.join(__dirname, `../dist/rtfx/index.html`);
-  const usedPath = env === 'development' ? servePath : compiledPath;
-
   if (env === 'development') {
     mainWindow.loadURL('http://localhost:4200');
   } else {
+    const bundledPath = path.join(__dirname, `./rtfx/index.html`);
     mainWindow.loadURL(
       url.format({
-        pathname: usedPath,
+        pathname: bundledPath,
         protocol: 'file:',
         slashes: true
       })
