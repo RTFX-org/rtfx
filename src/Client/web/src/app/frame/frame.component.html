@@ -9,7 +9,7 @@
         <i class="fa-regular fa-window-minimize"></i>
       </button>
       <button class="window-button" (click)="maximize()">
-        <i class="fa-regular fa-window-maximize"></i>
+        <i class="fa-regular {{ (isMaximized$ | async) ? 'fa-window-restore' : 'fa-window-maximize' }}"></i>
       </button>
       <button class="window-button close" (click)="close()">
         <i class="fa-solid fa-xmark"></i>

@@ -18,6 +18,10 @@ export class FrameComponent implements OnInit {
     this._settingsService = settingsService;
   }
 
+  public get isMaximized$() {
+    return this._windowService.isMaximized$;
+  }
+
   public ngOnInit(): void {
     (async () => {
       const settings = await this._settingsService.getSettings();
@@ -31,7 +35,7 @@ export class FrameComponent implements OnInit {
     this._windowService.minimize();
   }
   public maximize(): void {
-    this._windowService.maximize();
+    this._windowService.maximizeOrRestore();
   }
   public close(): void {
     this._windowService.close();

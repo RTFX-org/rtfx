@@ -33,6 +33,8 @@ function createWindow() {
     frame: false
   });
 
+  eventHandler.setListenerDefault('app:window_mode_changed', mainWindow?.isMaximized());
+
   if (env === 'development') {
     mainWindow.loadURL('http://localhost:4200');
   } else {
@@ -60,6 +62,14 @@ function createWindow() {
   mainWindow.on('blur', () => {
     electronLocalshortcut.unregisterAll(mainWindow!);
   });
+
+  mainWindow.on('maximize', () => {
+    eventHandler.send('app:window_mode_changed', true);
+  });
+
+  mainWindow.on('unmaximize', () => {
+    eventHandler.send('app:window_mode_changed', false);
+  });
 }
 
 app.on('ready', () => setTimeout(createWindow, 400));
@@ -76,8 +86,9 @@ const settingsPath = path.join(app.getPath('appData'), 'rtfx', 'settings.json');
 
 const eventHandler = new EventHandler(ipcMain);
 eventHandler.on('app:minimize', async () => mainWindow?.minimize());
-eventHandler.on('app:maximize', async () => mainWindow?.maximize());
-eventHandler.on('app:restore', async () => mainWindow?.restore());
+eventHandler.on('app:maximize_or_restore', async () =>
+  mainWindow?.isMaximized() ? mainWindow.restore() : mainWindow?.maximize()
+);
 eventHandler.on('app:close', async () => mainWindow?.close());
 eventHandler.on('app:quit', async () => app.quit());
 eventHandler.on('settings:get', async () => {
