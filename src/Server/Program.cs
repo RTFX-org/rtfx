@@ -1,6 +1,7 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
+using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
 
@@ -37,12 +38,32 @@ app.UseAuthorization();
 app.UseFastEndpoints(
     c =>
     {
-        c.Endpoints.ShortNames = true;
         c.Versioning.Prefix = "v";
         c.Versioning.DefaultVersion = 1;
         c.Versioning.PrependToRoute = true;
+        c.Endpoints.ShortNames = true;
         c.Endpoints.RoutePrefix = "api";
-        c.Endpoints.Configurator = e => e.AllowAnonymous();
+        c.Endpoints.Configurator = e =>
+        {
+            e.AllowAnonymous();
+            e.Summary(x =>
+            {
+                if (!x.ResponseExamples.ContainsKey(Status400BadRequest))
+                {
+                    x.ResponseExamples[Status400BadRequest] = new RtfxErrorResponse
+                    {
+                        new RtfxError { PropertyName = "[...]", ErrorCode = "string", Message = "string", AttemptedValue = "any" },
+                    };
+                }
+            });
+        };
+        c.Errors.ResponseBuilder = (failures, ctx, statusCode) =>
+        {
+            var response = new RtfxErrorResponse();
+            foreach (var failure in failures)
+                response.Add(new RtfxError(failure));
+            return response;
+        };
     });
 app.UseSwaggerGen(
     c => c.Path = "/api/swagger/{documentName}",

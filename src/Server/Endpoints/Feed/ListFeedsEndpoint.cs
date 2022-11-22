@@ -41,7 +41,7 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
         Get("/feeds");
         Description(x => x
             .WithTags("Feeds")
-            .ProducesProblemFE(Status400BadRequest));
+            .ProducesProblemRtfx(Status400BadRequest));
         Summary(x =>
         {
             x.Summary = "Lists all available feeds.";

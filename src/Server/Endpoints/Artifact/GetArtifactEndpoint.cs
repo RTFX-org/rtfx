@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
 
@@ -31,13 +32,17 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
         Get("/artifacts/{ArtifactId}");
         Description(x => x
             .WithTags("Artifacts")
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status404NotFound));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status404NotFound));
         Summary(x =>
         {
             x.Summary = "Geta information about an artifact.";
             x.Responses[Status200OK] = "The artifact was found.";
             x.Responses[Status404NotFound] = "The artifact was not found.";
+            x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
+            {
+                Errors.ArtifactWithIdDoesNotExist.GetError(1337),
+            };
         });
     }
 
@@ -46,7 +51,7 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
         var artifact = await _artifactRepository.TryGetArtifactWithMetadataAsync(req.ArtifactId, ct);
         if (artifact is null)
         {
-            await this.SendErrorAsync(Status404NotFound, ErrorMessages.ArtifactWithIdDoesNotExist(req.ArtifactId), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.ArtifactWithIdDoesNotExist.GetError(req.ArtifactId), ct);
             return;
         }
 

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
 
@@ -36,13 +37,17 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)
             .Produces<CreateFeedResponse>(Status201Created)
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status409Conflict));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status409Conflict));
         Summary(x =>
         {
             x.Summary = "Creates a new feed.";
             x.Responses[Status201Created] = "The feed has been created successfully.";
             x.Responses[Status409Conflict] = ErrorMessages.FeedWithNameAlreadyExists("[name]");
+            x.ResponseExamples[Status409Conflict] = new RtfxErrorResponse
+            {
+                Errors.FeedWithNameAlreadyExists.GetError("[name]"),
+            };
         });
     }
 
@@ -51,7 +56,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
         var feedExists = await _feedRepository.GetFeedExistAsync(req.Name, ct);
         if (feedExists)
         {
-            await this.SendErrorAsync(Status409Conflict, ErrorMessages.FeedWithNameAlreadyExists(req.Name), ct);
+            await this.SendErrorAsync(Status409Conflict, Errors.FeedWithNameAlreadyExists.GetError(req.Name), ct);
             return;
         }
 

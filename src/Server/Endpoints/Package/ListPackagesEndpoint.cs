@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaSch.Core.Extensions;
+using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
 using System.ComponentModel;
@@ -46,13 +47,17 @@ public class ListPackagesEndpoint : Endpoint<ListPackagesRequest, ListPackagesRe
         Get("/feeds/{FeedId}/packages");
         Description(x => x
             .WithTags("Packages")
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status404NotFound));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status404NotFound));
         Summary(x =>
         {
             x.Summary = "Lists all available packages in a feed.";
             x.Responses[Status200OK] = "The feed was found and the list of packages has ben successfully retrieved";
             x.Responses[Status404NotFound] = "The feed was not found.";
+            x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
+            {
+                Errors.FeedWithIdDoesNotExist.GetError(1337),
+            };
         });
     }
 
@@ -61,7 +66,7 @@ public class ListPackagesEndpoint : Endpoint<ListPackagesRequest, ListPackagesRe
         var feedExists = await _feedRepository.GetFeedExistAsync(req.FeedId, ct);
         if (!feedExists)
         {
-            await this.SendErrorAsync(Status404NotFound, ErrorMessages.FeedWithIdDoesNotExist(req.FeedId), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithIdDoesNotExist.GetError(req.FeedId), ct);
             return;
         }
 

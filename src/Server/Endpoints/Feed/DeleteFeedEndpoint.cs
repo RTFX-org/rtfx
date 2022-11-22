@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
+using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 
 namespace Rtfx.Server.Endpoints.Feed;
@@ -32,13 +33,17 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)
             .Produces(Status202Accepted)
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status404NotFound));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status404NotFound));
         Summary(x =>
         {
             x.Summary = "Deletes a feed and all its packages and artifacts. Use with caution.";
             x.Responses[Status202Accepted] = "The feed has been deleted. Packages and Artifacts will be deleted asyncronously.";
             x.Responses[Status404NotFound] = "The feed was not found.";
+            x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
+            {
+                Errors.FeedWithIdDoesNotExist.GetError(1337),
+            };
         });
     }
 
@@ -47,7 +52,7 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
         var feedExists = await _feedRepository.GetFeedExistAsync(req.Id, ct);
         if (!feedExists)
         {
-            await this.SendErrorAsync(Status404NotFound, ErrorMessages.FeedWithIdDoesNotExist(req.Id), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithIdDoesNotExist.GetError(req.Id), ct);
             return;
         }
 
