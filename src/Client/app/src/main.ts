@@ -35,7 +35,7 @@ function createWindow() {
   if (env === 'development') {
     mainWindow.loadURL('http://localhost:4200');
   } else {
-    const bundledPath = path.join(__dirname, `./rtfx/index.html`);
+    const bundledPath = path.join(__dirname, `../../rtfx/index.html`);
     mainWindow.loadURL(
       url.format({
         pathname: bundledPath,

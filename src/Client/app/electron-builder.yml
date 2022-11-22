@@ -1,10 +1,8 @@
 appId: com.rtfx.client
 files:
-  - ./rtfx/**/*
   - ./dist/**/*
 directories:
   output: bundle
-  app: app
   buildResources: src/assets/build
 win:
   target:

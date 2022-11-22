@@ -2,15 +2,19 @@
   "name": "rtfx-app",
   "description": "RTFX Electron App",
   "version": "0.0.1",
-  "main": "main.js",
+  "main": "dist/app/src/main.js",
+  "author": {
+    "name": "RTFX",
+    "url": "https://github.com/RTFX-org"
+  },
   "private": true,
   "prettier": "@awdware/prettier-config",
   "scripts": {
     "build-electron": "yarn tsc --project tsconfig.json",
     "serve-electron": "yarn build-electron --watch",
-    "start-app": "cross-env NODE_ENV=\"development\" electron ./app/dist/app/src/main.js --no-sandbox",
-    "app:dir": "yarn build-electron && yarn copy-app && electron-builder --dir",
-    "app:dist": "yarn build-electron && yarn copy-app && electron-builder -wl"
+    "start-app": "cross-env NODE_ENV=\"development\" electron ./dist/app/src/main.js --no-sandbox",
+    "app:dir": "yarn build-electron && electron-builder --dir",
+    "app:dist": "yarn build-electron && electron-builder -wl"
   },
   "dependencies": {
     "@awdware/prettier-config": "^0.0.2",
