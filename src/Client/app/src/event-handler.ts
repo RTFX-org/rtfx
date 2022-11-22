@@ -1,4 +1,4 @@
-import { ElectronEvent, EventFunc, EventFuncAsync, EventName } from '../src/app/models/electron.model';
+import { ElectronEvent, EventFunc, EventFuncAsync, EventName } from 'web-app';
 
 export class EventHandler {
   private readonly _ipcMain: Electron.IpcMain;

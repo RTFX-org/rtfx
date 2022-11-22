@@ -1,15 +1,9 @@
 appId: com.rtfx.client
 files:
-  - ./rtfx/**/*
-  - ./main.js
-  - ./event-handler.js
-  - ../src/app/models/app-settings.js
-  - ../src/app/models/electron.model.js
-  - ./preload.js
+  - ./dist/**/*
 directories:
   output: bundle
-  app: app
-  buildResources: app/build
+  buildResources: src/assets/build
 win:
   target:
     - target: portable

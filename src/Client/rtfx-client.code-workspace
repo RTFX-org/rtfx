@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": "app"
+    },
+    {
+      "path": "web"
+    },
+    {
+      "path": "build"
+    },
+    {
+      "path": "../../.github"
+    }
+  ],
+  "settings": {}
+}

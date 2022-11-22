@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as electronLocalshortcut from 'electron-localshortcut';
 import { EventHandler } from './event-handler';
-import { AppSettings } from '../src/app/models/app-settings';
+import { AppSettings } from 'web-app';
 
 let mainWindow: BrowserWindow | null;
 let settings: AppSettings;
@@ -14,7 +14,8 @@ if (env === 'development') {
   try {
     require('electron-reloader')(module, {
       debug: true,
-      watchRenderer: true
+      watchRenderer: true,
+      ignore: ['src', 'bundle']
     });
   } catch (_) {
     console.log('Error');
@@ -35,7 +36,7 @@ function createWindow() {
   if (env === 'development') {
     mainWindow.loadURL('http://localhost:4200');
   } else {
-    const bundledPath = path.join(__dirname, `./rtfx/index.html`);
+    const bundledPath = path.join(__dirname, `../../rtfx/index.html`);
     mainWindow.loadURL(
       url.format({
         pathname: bundledPath,
@@ -71,6 +72,8 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow();
 });
 
+const settingsPath = path.join(app.getPath('appData'), 'rtfx', 'settings.json');
+
 const eventHandler = new EventHandler(ipcMain);
 eventHandler.on('app:minimize', async () => mainWindow?.minimize());
 eventHandler.on('app:maximize', async () => mainWindow?.maximize());
@@ -78,20 +81,22 @@ eventHandler.on('app:restore', async () => mainWindow?.restore());
 eventHandler.on('app:close', async () => mainWindow?.close());
 eventHandler.on('app:quit', async () => app.quit());
 eventHandler.on('settings:get', async () => {
+  console.log(settingsPath);
   if (!settings) {
-    if (!fs.existsSync('settings.json')) {
+    if (!fs.existsSync(settingsPath)) {
       settings = {
         repoRootPath: ''
       };
-      await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
+      await fs.ensureDir(path.dirname(settingsPath));
+      await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
     }
-    settings = JSON.parse(await fs.promises.readFile('settings.json', 'utf8'));
+    settings = JSON.parse(await fs.promises.readFile(settingsPath, 'utf8'));
   }
   return settings;
 });
 eventHandler.on('settings:set', async (newSettings: AppSettings) => {
   settings = newSettings;
-  await fs.promises.writeFile('settings.json', JSON.stringify(settings, undefined, 2));
+  await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
 });
 eventHandler.on('app:move', async (x: number, y: number) => {
   if (mainWindow?.isMaximized) {
