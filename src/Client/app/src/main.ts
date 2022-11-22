@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as electronLocalshortcut from 'electron-localshortcut';
 import { EventHandler } from './event-handler';
-import { AppSettings } from '../src/app/models/app-settings';
+import { AppSettings } from 'web-app';
 
 let mainWindow: BrowserWindow | null;
 let settings: AppSettings;

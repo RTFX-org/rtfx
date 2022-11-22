@@ -5,7 +5,7 @@ files:
 directories:
   output: bundle
   app: app
-  buildResources: app/build
+  buildResources: src/assets/build
 win:
   target:
     - target: portable
