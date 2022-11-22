@@ -1,11 +1,14 @@
 {
   "folders": [
-	{
-		"path": "app"
-	},
-	{
-		"path": "web"
-	}
-],
+    {
+      "path": "app"
+    },
+    {
+      "path": "web"
+    },
+    {
+      "path": "build"
+    }
+  ],
   "settings": {}
 }
