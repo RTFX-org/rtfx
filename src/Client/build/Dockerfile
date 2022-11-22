@@ -4,7 +4,7 @@ RUN ls -R
 
 WORKDIR /work-dir
 COPY app/package.json app/yarn.lock ./app/
-COPY web/package.json web/yarn.lock ./app/
+COPY web/package.json web/yarn.lock ./web/
 
 WORKDIR /work-dir/app
 RUN yarn
