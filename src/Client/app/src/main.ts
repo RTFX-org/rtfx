@@ -33,7 +33,34 @@ function createWindow() {
     frame: false
   });
 
+  const eventHandler = new EventHandler(ipcMain, mainWindow);
+
   eventHandler.setListenerDefault('app:window_mode_changed', mainWindow?.isMaximized());
+
+  eventHandler.on('app:minimize', async () => mainWindow?.minimize());
+  eventHandler.on('app:maximize_or_restore', async () =>
+    mainWindow?.isMaximized() ? mainWindow.restore() : mainWindow?.maximize()
+  );
+  eventHandler.on('app:close', async () => mainWindow?.close());
+  eventHandler.on('app:quit', async () => app.quit());
+  eventHandler.on('settings:get', async () => {
+    console.log(settingsPath);
+    if (!settings) {
+      if (!fs.existsSync(settingsPath)) {
+        settings = {
+          repoRootPath: ''
+        };
+        await fs.ensureDir(path.dirname(settingsPath));
+        await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
+      }
+      settings = JSON.parse(await fs.promises.readFile(settingsPath, 'utf8'));
+    }
+    return settings;
+  });
+  eventHandler.on('settings:set', async (newSettings: AppSettings) => {
+    settings = newSettings;
+    await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
+  });
 
   if (env === 'development') {
     mainWindow.loadURL('http://localhost:4200');
@@ -83,29 +110,3 @@ app.on('activate', function () {
 });
 
 const settingsPath = path.join(app.getPath('appData'), 'rtfx', 'settings.json');
-
-const eventHandler = new EventHandler(ipcMain);
-eventHandler.on('app:minimize', async () => mainWindow?.minimize());
-eventHandler.on('app:maximize_or_restore', async () =>
-  mainWindow?.isMaximized() ? mainWindow.restore() : mainWindow?.maximize()
-);
-eventHandler.on('app:close', async () => mainWindow?.close());
-eventHandler.on('app:quit', async () => app.quit());
-eventHandler.on('settings:get', async () => {
-  console.log(settingsPath);
-  if (!settings) {
-    if (!fs.existsSync(settingsPath)) {
-      settings = {
-        repoRootPath: ''
-      };
-      await fs.ensureDir(path.dirname(settingsPath));
-      await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
-    }
-    settings = JSON.parse(await fs.promises.readFile(settingsPath, 'utf8'));
-  }
-  return settings;
-});
-eventHandler.on('settings:set', async (newSettings: AppSettings) => {
-  settings = newSettings;
-  await fs.promises.writeFile(settingsPath, JSON.stringify(settings, undefined, 2));
-});

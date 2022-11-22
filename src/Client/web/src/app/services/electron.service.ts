@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import {
   EventElectronToWeb,
   EventFunc,
@@ -11,7 +11,11 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ElectronService {
-  constructor() {}
+  private readonly _ngZone: NgZone;
+
+  constructor(ngZone: NgZone) {
+    this._ngZone = ngZone;
+  }
 
   public send<T extends EventWebToElectron, A extends EventNameWebToElectron>(
     event: A,
@@ -24,6 +28,10 @@ export class ElectronService {
     event: A,
     listener: (...args: FuncArgs<EventFunc<T, A>>) => void
   ): void {
-    (<any>window).rtfxApi.on(event, listener);
+    (<any>window).rtfxApi.on(event, (...args: FuncArgs<EventFunc<T, A>>) => {
+      this._ngZone.run(() => {
+        listener(...args);
+      });
+    });
   }
 }

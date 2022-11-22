@@ -2,12 +2,12 @@
 
 ## Build App
 
-1. `yarn build` to build the angular app
-2. `app:dir` to build the electron app
-3. OR `yarn app:dist` to build the electron app and package it
+1. `yarn build` in `/web` to build the angular app
+2. `app:dir` in `/app` to build the electron app
+3. OR `yarn app:dist` in `/app` to build the electron app and package it
 
 ## Serve App
 
-1. `yarn start` to serve the angular app
-2. `yarn serve-electron` to build and watch the electron code
-3. `yarn start-app` to serve the electron app
+1. `yarn start` in `/web` to serve the angular app
+2. `yarn build:watch` in `/app` to build and watch the electron code
+3. `yarn start` in `/app` to serve the electron app

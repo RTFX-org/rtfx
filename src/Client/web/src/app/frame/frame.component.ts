@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
 import { WindowService } from '../services/window.service';
 
 @Component({
   selector: 'app-frame',
   templateUrl: './frame.component.html',
-  styleUrls: ['./frame.component.scss']
+  styleUrls: ['./frame.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FrameComponent implements OnInit {
   private readonly _windowService: WindowService;
