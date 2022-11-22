@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "copy-dist": "yarn del-cli ../app/dist/rtfx/** && yarn cpy . ../../../app/dist/rtfx --cwd dist/rtfx"
+    "copy-dist": "yarn del-cli ../app/dist/rtfx/** && yarn cpy . ../../../app/dist/rtfx --cwd dist/rtfx",
+    "build-and-copy": "yarn build && yarn copy-dist"
   },
   "private": true,
   "dependencies": {
