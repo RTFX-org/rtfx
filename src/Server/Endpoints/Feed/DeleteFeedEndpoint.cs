@@ -53,7 +53,6 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
 
         await _feedRepository.RemoveFeedAsync(req.Id, ct);
 
-        HttpContext.Response.StatusCode = Status202Accepted;
-        await HttpContext.Response.StartAsync(ct);
+        await this.SendAcceptedAsync(ct);
     }
 }

@@ -24,7 +24,7 @@ public class FeedRepository : IFeedRepository
         return await _database.Feeds.AnyAsync(x => x.Name == feedName, ct);
     }
 
-    public IQueryable<Feed> GetFeedsAsync(int skip, int take)
+    public IQueryable<Feed> GetFeeds(int skip, int take)
     {
         return _database.Feeds
             .OrderBy(x => x.CreationDate)

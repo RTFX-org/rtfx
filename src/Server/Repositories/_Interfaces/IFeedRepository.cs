@@ -11,5 +11,5 @@ public interface IFeedRepository
     Task<long> TryGetFeedIdAsync(string feedName, CancellationToken ct);
     Task<long> InsertFeedAsync(Feed feed, CancellationToken ct);
     Task RemoveFeedAsync(long feedId, CancellationToken ct);
-    IQueryable<Feed> GetFeedsAsync(int skip, int take);
+    IQueryable<Feed> GetFeeds(int skip, int take);
 }

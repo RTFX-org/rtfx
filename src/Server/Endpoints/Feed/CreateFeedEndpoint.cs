@@ -61,6 +61,6 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
         };
         await _feedRepository.InsertFeedAsync(feed, ct);
 
-        await SendAsync(new CreateFeedResponse(FeedDto.Create(HttpContext, feed)), Status201Created, ct);
+        await this.SendCreatedAsync(new CreateFeedResponse(FeedDto.Create(feed)), ct);
     }
 }

@@ -50,6 +50,6 @@ public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNam
             return;
         }
 
-        await SendAsync(new GetFeedByNameResponse(FeedDto.Create(HttpContext, feed)), cancellation: ct);
+        await SendOkAsync(new GetFeedByNameResponse(FeedDto.Create(feed)), ct);
     }
 }

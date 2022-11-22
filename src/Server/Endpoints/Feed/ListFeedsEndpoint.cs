@@ -52,8 +52,8 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
     public override async Task HandleAsync(ListFeedsRequest req, CancellationToken ct)
     {
         var feeds = await _feedRepository
-            .GetFeedsAsync(req.Skip ?? 0, req.Take ?? 25)
-            .Select(x => FeedDto.Create(HttpContext, x))
+            .GetFeeds(req.Skip ?? 0, req.Take ?? 25)
+            .Select(x => FeedDto.Create(x))
             .ToArrayAsync();
 
         await SendOkAsync(new ListFeedsResponse(feeds), ct);

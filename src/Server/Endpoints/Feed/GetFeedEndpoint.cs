@@ -50,6 +50,6 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
             return;
         }
 
-        await SendAsync(new GetFeedResponse(FeedDto.Create(HttpContext, feed)), cancellation: ct);
+        await SendOkAsync(new GetFeedResponse(FeedDto.Create(feed)), ct);
     }
 }

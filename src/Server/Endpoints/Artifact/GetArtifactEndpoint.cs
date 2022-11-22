@@ -50,6 +50,6 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
             return;
         }
 
-        await SendAsync(new GetArtifactResponse(ArtifactInfoDto.Create(HttpContext, artifact)), Status200OK, ct);
+        await SendOkAsync(new GetArtifactResponse(ArtifactInfoDto.Create(artifact)), ct);
     }
 }
