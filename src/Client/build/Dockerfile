@@ -11,8 +11,8 @@ RUN yarn
 WORKDIR /work-dir/web
 RUN yarn
 
+WORKDIR /work-dir
 COPY . .
-
 
 # Build the Angular app
 WORKDIR /work-dir/web
