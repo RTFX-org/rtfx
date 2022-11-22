@@ -31,7 +31,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
 
     public override void Configure()
     {
-        Put("/api/feeds");
+        Put("/feeds");
         Description(x => x
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)

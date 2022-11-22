@@ -28,7 +28,7 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
 
     public override void Configure()
     {
-        Get("/api/artifacts/{ArtifactId}");
+        Get("/artifacts/{ArtifactId}");
         Description(x => x
             .WithTags("Artifacts")
             .ProducesProblemFE(Status400BadRequest)

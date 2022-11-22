@@ -38,7 +38,7 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
 
     public override void Configure()
     {
-        Get("/api/feeds");
+        Get("/feeds");
         Description(x => x
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest));

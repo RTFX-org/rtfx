@@ -28,7 +28,7 @@ public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNam
 
     public override void Configure()
     {
-        Get("/api/feeds/feed");
+        Get("/feeds/feed");
         Description(x => x
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest)

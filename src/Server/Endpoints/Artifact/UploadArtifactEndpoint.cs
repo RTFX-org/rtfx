@@ -40,7 +40,7 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
 
     public override void Configure()
     {
-        Put("/api/artifacts/upload");
+        Put("/artifacts/upload");
         AllowFileUploads();
         Description(x => x
             .WithTags("Artifacts")

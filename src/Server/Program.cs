@@ -15,10 +15,11 @@ builder.Services.AddFastEndpoints(
 builder.Services.AddSwaggerDoc(
     s =>
     {
-        s.DocumentName = "v0";
+        s.DocumentName = "v1";
         s.Title = "RTFX API";
-        s.Version = "v0.0";
+        s.Version = "v1.0";
     },
+    maxEndpointVersion: 1,
     addJWTBearerAuth: false,
     shortSchemaNames: true,
     removeEmptySchemas: true,
@@ -38,6 +39,9 @@ app.UseFastEndpoints(
     {
         c.Endpoints.ShortNames = true;
         c.Versioning.Prefix = "v";
+        c.Versioning.DefaultVersion = 1;
+        c.Versioning.PrependToRoute = true;
+        c.Endpoints.RoutePrefix = "api";
         c.Endpoints.Configurator = e => e.AllowAnonymous();
     });
 app.UseSwaggerGen(

@@ -27,7 +27,7 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
 
     public override void Configure()
     {
-        Delete("/api/feeds/{Id}");
+        Delete("/feeds/{Id}");
         Description(x => x
             .WithTags("Feeds")
             .DoesNotProduce(Status200OK)

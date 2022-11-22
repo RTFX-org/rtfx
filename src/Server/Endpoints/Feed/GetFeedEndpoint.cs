@@ -28,7 +28,7 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
 
     public override void Configure()
     {
-        Get("/api/feeds/{Id}");
+        Get("/feeds/{Id}");
         Description(x => x
             .WithTags("Feeds")
             .ProducesProblemFE(Status400BadRequest)
