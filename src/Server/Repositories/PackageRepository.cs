@@ -13,6 +13,15 @@ public class PackageRepository : IPackageRepository
         _database = database;
     }
 
+    public IQueryable<Package> GetPackages(long feedId, int skip, int take)
+    {
+        return _database.Packages
+            .Where(x => x.FeedId == feedId)
+            .OrderBy(x => x.CreationDate)
+            .Skip(skip)
+            .Take(take);
+    }
+
     public async Task<long> InsertPackageAsync(Package package, CancellationToken ct)
     {
         if (package.PackageId != 0)

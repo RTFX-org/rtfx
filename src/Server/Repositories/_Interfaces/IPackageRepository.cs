@@ -6,4 +6,5 @@ public interface IPackageRepository
 {
     Task<long> TryGetPackageIdAsync(long feedId, string packageName, CancellationToken ct);
     Task<long> InsertPackageAsync(Package package, CancellationToken ct);
+    IQueryable<Package> GetPackages(long feedId, int skip, int take);
 }
