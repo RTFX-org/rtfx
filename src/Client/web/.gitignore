@@ -42,9 +42,7 @@ testem.log
 Thumbs.db
 
 # electron
-app/main.js*
-app/preload.js*
-app/event-handler.js*
+app/dist
 src/app/**/*.js*
 app/rtfx
 bundle
