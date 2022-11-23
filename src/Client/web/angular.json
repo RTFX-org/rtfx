@@ -59,6 +59,14 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "electron": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/host.ts",
+                  "with": "src/environments/host.electron.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

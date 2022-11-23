@@ -16,7 +16,7 @@ COPY . .
 
 # Build the Angular app
 WORKDIR /work-dir/web
-RUN yarn build
+RUN yarn build:electron
 RUN yarn copy-dist
 
 # Build and package the Electron app
