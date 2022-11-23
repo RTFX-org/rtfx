@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
 
@@ -31,13 +32,17 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
         Get("/feeds/{Id}");
         Description(x => x
             .WithTags("Feeds")
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status404NotFound));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status404NotFound));
         Summary(x =>
         {
             x.Summary = "Gets a feed.";
             x.Responses[Status200OK] = "The feed was found.";
             x.Responses[Status404NotFound] = "The feed was not found.";
+            x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
+            {
+                Errors.FeedWithIdDoesNotExist.GetError(1337),
+            };
         });
     }
 
@@ -46,7 +51,7 @@ public sealed class GetFeedEndpoint : Endpoint<GetFeedRequest, GetFeedResponse>
         var feed = await _feedRepository.TryGetFeedAsync(req.Id, ct);
         if (feed is null)
         {
-            await this.SendErrorAsync(Status404NotFound, ErrorMessages.FeedWithIdDoesNotExist(req.Id), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithIdDoesNotExist.GetError(req.Id), ct);
             return;
         }
 

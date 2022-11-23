@@ -1,5 +1,6 @@
 ﻿using MaSch.Core.Extensions;
 using Microsoft.AspNetCore.Http.Metadata;
+using Rtfx.Server.Models;
 
 namespace Rtfx.Server.Extensions;
 
@@ -16,5 +17,10 @@ public static class RouteHandlerBuilderExtensions
             ListExtensions.Remove(b.Metadata, toRemove);
         });
         return builder;
+    }
+
+    public static RouteHandlerBuilder ProducesProblemRtfx(this RouteHandlerBuilder builder, int statusCode)
+    {
+        return builder.ProducesProblemFE<RtfxErrorResponse>(statusCode);
     }
 }

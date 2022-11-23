@@ -1,10 +1,12 @@
-﻿namespace Rtfx.Server.Extensions;
+﻿using FluentValidation.Results;
+
+namespace Rtfx.Server.Extensions;
 
 public static class EndpointExtensions
 {
-    public static async Task SendErrorAsync(this IEndpoint endpoint, int statusCode, string message, CancellationToken cancellation)
+    public static async Task SendErrorAsync(this IEndpoint endpoint, int statusCode, ValidationFailure error, CancellationToken cancellation)
     {
-        await endpoint.HttpContext.Response.SendErrorAsync(statusCode, message, cancellation);
+        await endpoint.HttpContext.Response.SendErrorAsync(statusCode, error, cancellation);
     }
 
     public static async Task SendAsync(this IEndpoint endpoint, int statusCode, CancellationToken cancellation)

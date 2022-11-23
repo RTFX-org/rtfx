@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaSch.Core.Extensions;
+using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
@@ -45,9 +46,9 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
         Description(x => x
             .WithTags("Artifacts")
             .Produces<UploadArtifactResponse>(Status201Created)
-            .ProducesProblemFE(Status400BadRequest)
-            .ProducesProblemFE(Status404NotFound)
-            .ProducesProblemFE(Status409Conflict));
+            .ProducesProblemRtfx(Status400BadRequest)
+            .ProducesProblemRtfx(Status404NotFound)
+            .ProducesProblemRtfx(Status409Conflict));
         Summary(x =>
         {
             x.Summary = "Stores an artifact.";
@@ -55,6 +56,20 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             x.Responses[Status201Created] = "The artifact has been successfully created.";
             x.Responses[Status404NotFound] = "The feed or package was not found.";
             x.Responses[Status409Conflict] = "The artifact already exists but the overwriteExisting query parameter is not set to true.";
+            x.ResponseExamples[Status400BadRequest] = new RtfxErrorResponse
+            {
+                new RtfxError { PropertyName = "[...]", ErrorCode = "string", Message = "string", AttemptedValue = "any" },
+                _artifactValidationService.GetExampleErrors(),
+            };
+            x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
+            {
+                Errors.FeedWithNameDoesNotExist.GetError("[FeedName]"),
+                Errors.PackageWithNameDoesNotExist.GetError("[FeedName]", "[PackageName]"),
+            };
+            x.ResponseExamples[Status409Conflict] = new RtfxErrorResponse
+            {
+                Errors.ArtifactAlreadyExists.GetError("[FeedName]", "[PackageName]", "[SourceHash]"),
+            };
         });
     }
 
@@ -77,19 +92,19 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
 
         if (feedId <= 0 && req.CreateFeedAndPackage != true)
         {
-            await this.SendErrorAsync(Status409Conflict, ErrorMessages.FeedWithNameDoesNotExist(metadata.FeedName), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithNameDoesNotExist.GetError(metadata.FeedName), ct);
             return;
         }
 
         if (packageId <= 0 && req.CreateFeedAndPackage != true)
         {
-            await this.SendErrorAsync(Status409Conflict, ErrorMessages.PackageWithNameDoesNotExist(metadata.FeedName, metadata.PackageName), ct);
+            await this.SendErrorAsync(Status404NotFound, Errors.PackageWithNameDoesNotExist.GetError(metadata.FeedName, metadata.PackageName), ct);
             return;
         }
 
         if (artifactId > 0 && req.OverwriteExisting != true)
         {
-            await this.SendErrorAsync(Status409Conflict, ErrorMessages.ArtifactAlreadyExists(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
+            await this.SendErrorAsync(Status409Conflict, Errors.ArtifactAlreadyExists.GetError(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
             return;
         }
 
