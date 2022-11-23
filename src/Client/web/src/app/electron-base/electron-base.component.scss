@@ -1,5 +1,5 @@
-@import 'all';
 $appBarHeight: 48px;
+@import 'theme';
 
 .main-container {
   display: flex;
@@ -12,6 +12,7 @@ $appBarHeight: 48px;
     display: flex;
     justify-content: space-between;
     background: $barColor;
+    user-select: none;
     -webkit-app-region: drag; // Electron window drag
     .section {
       width: 100%;
@@ -21,17 +22,24 @@ $appBarHeight: 48px;
         justify-content: center;
       }
       &.right {
-        -webkit-app-region: no-drag; // Electron window drag
         display: flex;
         align-items: center;
         justify-content: flex-end;
         .window-button {
+          outline: none;
+          -webkit-app-region: no-drag; // Electron window drag
           background: $barColor;
           width: $appBarHeight;
           height: $appBarHeight;
           display: flex;
           justify-content: center;
           align-items: center;
+          border: none;
+          color: $colorFontPrimary;
+          &:focus {
+            box-shadow: 0 0 0 3px $barColorHover inset;
+            z-index: 1;
+          }
           &:hover {
             background: $barColorHover;
             &.close {

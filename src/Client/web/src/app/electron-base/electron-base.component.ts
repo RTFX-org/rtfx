@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
-import { WindowService } from '../services/window.service';
+import { SettingsService } from './services/settings.service';
+import { WindowService } from './services/window.service';
 
 @Component({
-  selector: 'app-frame',
   templateUrl: './electron-base.component.html',
   styleUrls: ['./electron-base.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
