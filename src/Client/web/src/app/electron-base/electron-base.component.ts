@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
-import { WindowService } from '../services/window.service';
+import { SettingsService } from './services/settings.service';
+import { WindowService } from './services/window.service';
 
 @Component({
-  selector: 'app-frame',
-  templateUrl: './frame.component.html',
-  styleUrls: ['./frame.component.scss'],
+  templateUrl: './electron-base.component.html',
+  styleUrls: ['./electron-base.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FrameComponent implements OnInit {
+export class ElectronBaseComponent implements OnInit {
   private readonly _windowService: WindowService;
   private readonly _settingsService: SettingsService;
 

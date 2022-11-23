@@ -6,19 +6,23 @@
     "ng": "ng",
     "electron": "electron",
     "start": "ng serve --hmr",
+    "start:electron": "ng serve --configuration electron --hmr",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build:electron": "ng build --configuration electron",
+    "watch": "yarn build --watch --configuration development",
+    "watch:electron": "yarn build --watch --configuration development,electron",
     "test": "ng test",
-    "copy-dist": "yarn del-cli ../app/dist/rtfx/** && yarn cpy . ../../../app/dist/rtfx --cwd dist/rtfx",
-    "build-and-copy": "yarn build && yarn copy-dist"
+    "copy-dist": "yarn del-cli ../app/dist/rtfx/** && yarn cpy . ../../../app/dist/rtfx --cwd dist/rtfx"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "^15.0.0",
+    "@angular/cdk": "15.0.0",
     "@angular/common": "^15.0.0",
     "@angular/compiler": "^15.0.0",
     "@angular/core": "^15.0.0",
     "@angular/forms": "^15.0.0",
+    "@angular/material": "15.0.0",
     "@angular/platform-browser": "^15.0.0",
     "@angular/platform-browser-dynamic": "^15.0.0",
     "@angular/router": "^15.0.0",
@@ -43,7 +47,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "prettier": "^2.7.1",
-    "ts-node": "^10.9.1",
     "typescript": "~4.8.4"
   }
 }

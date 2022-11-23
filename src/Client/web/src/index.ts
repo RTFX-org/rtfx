@@ -1,2 +1,2 @@
-export * from './app/models/app-settings';
-export * from './app/models/electron.model';
+export * from './app/electron-base/models/app-settings';
+export * from './app/electron-base/models/electron.model';

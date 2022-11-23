@@ -1,15 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "all";
+@import 'theme';
 
-* {
+html,
+body {
   color: $colorFontPrimary;
 }
-
 body {
   margin: 0;
-}
-
-button {
-  border: none;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
