@@ -38,12 +38,7 @@ export type EventWebToElectron =
       func: (settings: AppSettings) => void;
     };
 
-export type EventElectronToWeb =
-  | {
-      name: 'app:window_mode_changed';
-      func: (isMaximized: boolean) => void;
-    }
-  | {
-      name: 'app:window_closed';
-      func: () => void;
-    };
+export type EventElectronToWeb = {
+  name: 'app:window_mode_changed';
+  func: (isMaximized: boolean) => void;
+};
