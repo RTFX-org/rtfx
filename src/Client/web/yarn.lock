@@ -4482,6 +4482,13 @@ nested-error-stacks@^2.0.0, nested-error-stacks@^2.1.0:
   resolved "https://registry.npmjs.org/nested-error-stacks/-/nested-error-stacks-2.1.1.tgz#26c8a3cee6cc05fbcf1e333cd2fc3e003326c0b5"
   integrity sha512-9iN1ka/9zmX1ZvLV9ewJYEk9h7RyRRtqdK0woXcqohu8EWIerfPUjYJPg0ULy0UqP7cslmdGc8xKDJcojlKiaw==
 
+ng-let@^15.0.1:
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/ng-let/-/ng-let-15.0.1.tgz#d9c1b9ec774641618470d3a2657c16afd59548ad"
+  integrity sha512-cR9MGDwK1dYkPnI0SBmT99ReLj3W9klpilszl5WP2yy0IS/hHkFAOVWdZL1soalS9b0m2BsXsE1ztKuw66SLiA==
+  dependencies:
+    tslib "^2.3.1"
+
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"
@@ -5918,7 +5925,7 @@ ts-node@^10.9.1:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-tslib@2.4.1, tslib@^2.1.0, tslib@^2.3.0:
+tslib@2.4.1, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.3.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==

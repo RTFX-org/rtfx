@@ -10,11 +10,11 @@
   "private": true,
   "prettier": "@awdware/prettier-config",
   "scripts": {
-    "build-electron": "yarn tsc --project tsconfig.json",
-    "serve-electron": "yarn build-electron --watch",
-    "start-app": "cross-env NODE_ENV=\"development\" electron ./dist/app/src/main.js --no-sandbox",
-    "app:dir": "yarn build-electron && electron-builder --dir",
-    "app:dist": "yarn build-electron && electron-builder -wl"
+    "build": "yarn tsc --project tsconfig.json",
+    "build:watch": "yarn build --watch",
+    "start": "cross-env NODE_ENV=\"development\" electron ./dist/app/src/main.js --no-sandbox",
+    "app:dir": "yarn build && electron-builder --dir",
+    "app:dist": "yarn build && electron-builder -wl"
   },
   "dependencies": {
     "@awdware/prettier-config": "^0.0.2",

@@ -9,7 +9,14 @@
         <i class="fa-regular fa-window-minimize"></i>
       </button>
       <button class="window-button" (click)="maximize()">
-        <i class="fa-regular fa-window-maximize"></i>
+        <ng-container *ngLet="isMaximized$ | async as isMaximized">
+          <div *ngIf="isMaximized">
+            <i class="fa-regular fa-window-restore"></i>
+          </div>
+          <div *ngIf="!isMaximized">
+            <i class="fa-regular fa-window-maximize"></i>
+          </div>
+        </ng-container>
       </button>
       <button class="window-button close" (click)="close()">
         <i class="fa-solid fa-xmark"></i>

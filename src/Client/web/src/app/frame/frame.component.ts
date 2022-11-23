@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
 import { WindowService } from '../services/window.service';
 
 @Component({
   selector: 'app-frame',
   templateUrl: './frame.component.html',
-  styleUrls: ['./frame.component.scss']
+  styleUrls: ['./frame.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FrameComponent implements OnInit {
   private readonly _windowService: WindowService;
@@ -16,6 +17,10 @@ export class FrameComponent implements OnInit {
   constructor(windowService: WindowService, settingsService: SettingsService) {
     this._windowService = windowService;
     this._settingsService = settingsService;
+  }
+
+  public get isMaximized$() {
+    return this._windowService.isMaximized$;
   }
 
   public ngOnInit(): void {
@@ -31,7 +36,7 @@ export class FrameComponent implements OnInit {
     this._windowService.minimize();
   }
   public maximize(): void {
-    this._windowService.maximize();
+    this._windowService.maximizeOrRestore();
   }
   public close(): void {
     this._windowService.close();
