@@ -16,6 +16,7 @@ COPY . .
 
 # Build the Angular app
 WORKDIR /work-dir/web
+RUN yarn codegen
 RUN yarn build:electron
 RUN yarn copy-dist
 
