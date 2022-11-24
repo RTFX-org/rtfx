@@ -7,24 +7,24 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-      - name: [Server] Setup .NET
+      - name: "[Server] Setup .NET"
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
-      - name: [Server] Restore dependencies
+      - name: "[Server] Restore dependencies"
         run: dotnet restore
-      - name: [Server] Build
+      - name: "[Server] Build"
         run: dotnet build --no-restore
 
-      - name: [Client] Build rtfx-builder-base Docker Image
+      - name: "[Client] Build rtfx-builder-base Docker Image"
         run: docker build .devcontainer -t rtfx-builder-base
         working-directory: ./src/Client
-      - name: [Client] Build rtfx-builder Docker Image
+      - name: "[Client] Build rtfx-builder Docker Image"
         run: docker build -f build/Dockerfile . -t rtfx-builder
         working-directory: ./src/Client
-      - name: [Client] Copy Electron Build to Host
+      - name: "[Client] Copy Electron Build to Host"
         run: docker cp $(docker create rtfx-builder):/work-dir/app/bundle ./electron-dist
-      - name: [Client] Upload Artifact
+      - name: "[Client] Upload Artifact"
         uses: actions/upload-artifact@v3
         with:
           name: electron-dist
