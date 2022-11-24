@@ -13,12 +13,15 @@
     "mrmlnc.vscode-scss",
     "dkneeland.yarn-task-provider",
     "yzhang.markdown-all-in-one",
-    "davidanson.vscode-markdownlint"
+    "davidanson.vscode-markdownlint",
+    "eamodio.gitlens"
   ],
   "context": "..",
   "dockerFile": "./Dockerfile",
   "containerEnv": {
     "DISPLAY": "unix:0"
   },
-  "mounts": ["source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"]
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+  ]
 }
