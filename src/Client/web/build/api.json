@@ -1,0 +1,627 @@
+{
+  "x-generator": "NSwag v13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "RTFX API",
+    "version": "v0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7082"
+    }
+  ],
+  "paths": {
+    "/api/artifacts/{ArtifactId}": {
+      "get": {
+        "tags": [
+          "Artifacts"
+        ],
+        "summary": "Geta information about an artifact.",
+        "operationId": "GetArtifactEndpoint",
+        "parameters": [
+          {
+            "name": "ArtifactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The artifact was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetArtifactResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The artifact was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artifacts/upload": {
+      "put": {
+        "tags": [
+          "Artifacts"
+        ],
+        "summary": "Stores an artifact.",
+        "operationId": "UploadArtifactEndpoint",
+        "requestBody": {
+          "x-name": "UploadArtifactRequest",
+          "description": "",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadArtifactRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "The artifact has been successfully modified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadArtifactResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The artifact has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadArtifactResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The feed or package was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The artifact already exists but the overwriteExisting query parameter is not set to true.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feeds": {
+      "put": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Creates a new feed.",
+        "operationId": "CreateFeedEndpoint",
+        "requestBody": {
+          "x-name": "CreateFeedRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeedRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "201": {
+            "description": "The feed has been created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateFeedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A feed with the name \"[name]\" already exists.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Lists all available feeds.",
+        "operationId": "ListFeedsEndpoint",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "default": 0
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "default": 25
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of feeds has ben successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFeedsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feeds/{Id}": {
+      "delete": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Deletes a feed and all its packages and artifacts. Use with caution.",
+        "operationId": "DeleteFeedEndpoint",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The feed has been deleted. Packages and Artifacts will be deleted asyncronously."
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The feed was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Gets a feed.",
+        "operationId": "GetFeedEndpoint",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The feed was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFeedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The feed was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feeds/feed": {
+      "get": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "Gets a feed by its name.",
+        "operationId": "GetFeedByNameEndpoint",
+        "parameters": [
+          {
+            "name": "Name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The feed was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFeedByNameResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The feed was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetArtifactResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactInfoDto"
+          }
+        }
+      },
+      "ArtifactInfoDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feedId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "feedName": {
+            "type": "string"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "packageName": {
+            "type": "string"
+          },
+          "artifactId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sourceVersions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceVersionDto"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/ArtifactLinksDto"
+          }
+        }
+      },
+      "SourceVersionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "branch": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string"
+          }
+        }
+      },
+      "ArtifactLinksDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feed": {
+            "type": "string",
+            "format": "uri"
+          },
+          "package": {
+            "type": "string",
+            "format": "uri"
+          },
+          "artifact": {
+            "type": "string",
+            "format": "uri"
+          },
+          "download": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "UploadArtifactResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactInfoDto"
+          }
+        }
+      },
+      "UploadArtifactRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact"
+        ],
+        "properties": {
+          "artifact": {
+            "type": "string",
+            "format": "binary",
+            "minLength": 1,
+            "nullable": false
+          },
+          "createFeedAndPackage": {
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "overwriteExisting": {
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          }
+        }
+      },
+      "CreateFeedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feed": {
+            "$ref": "#/components/schemas/FeedDto"
+          }
+        }
+      },
+      "FeedDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_links": {
+            "$ref": "#/components/schemas/FeedLinksDto"
+          }
+        }
+      },
+      "FeedLinksDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feed": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "CreateFeedRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z\\.\\-_][a-zA-Z0-9\\.\\-_]*$",
+            "nullable": false
+          }
+        }
+      },
+      "GetFeedByNameResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feed": {
+            "$ref": "#/components/schemas/FeedDto"
+          }
+        }
+      },
+      "GetFeedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feed": {
+            "$ref": "#/components/schemas/FeedDto"
+          }
+        }
+      },
+      "ListFeedsResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feeds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedDto"
+            }
+          }
+        }
+      }
+    }
+  }
+}
