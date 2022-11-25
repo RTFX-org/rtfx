@@ -1,9 +1,13 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
+using NSwag.Generation;
 using Rtfx.Server.Database;
 using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 var configurationService = new ConfigurationService(builder.Configuration);
@@ -75,6 +79,16 @@ app.UseSwaggerGen(
 
 using (var scope = app.Services.CreateScope())
 {
+    if (Environment.GetCommandLineArgs().Contains("--generateOpenApiFile"))
+    {
+        var generator = scope.ServiceProvider.GetRequiredService<IOpenApiDocumentGenerator>();
+        var doc = await generator.GenerateAsync("v1");
+
+        var json = doc.ToJson();
+        await File.WriteAllTextAsync("api-v1.json", json);
+        Environment.Exit(0);
+    }
+
     await scope.ServiceProvider.GetRequiredService<DatabaseContext>().Database.MigrateAsync();
 }
 
