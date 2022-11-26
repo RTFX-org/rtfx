@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using MaSch.Core.Extensions;
 using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
@@ -31,12 +32,18 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
     private readonly IArtifactRepository _artifactRepository;
     private readonly IArtifactValidationService _artifactValidationService;
     private readonly IArtifactStorageService _artifactStorageService;
+    private readonly IIdHashingService _idHashingService;
 
-    public UploadArtifactEndpoint(IArtifactRepository artifactRepository, IArtifactValidationService artifactValidationService, IArtifactStorageService artifactStorageService)
+    public UploadArtifactEndpoint(
+        IArtifactRepository artifactRepository,
+        IArtifactValidationService artifactValidationService,
+        IArtifactStorageService artifactStorageService,
+        IIdHashingService idHashingService)
     {
         _artifactRepository = artifactRepository;
         _artifactValidationService = artifactValidationService;
         _artifactStorageService = artifactStorageService;
+        _idHashingService = idHashingService;
     }
 
     public override void Configure()
@@ -58,17 +65,17 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             x.Responses[Status409Conflict] = "The artifact already exists but the overwriteExisting query parameter is not set to true.";
             x.ResponseExamples[Status400BadRequest] = new RtfxErrorResponse
             {
-                new RtfxError { PropertyName = "[...]", ErrorCode = "string", Message = "string", AttemptedValue = "any" },
                 _artifactValidationService.GetExampleErrors(),
+                RtfxError.DefaultExample,
             };
             x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
             {
-                Errors.FeedWithNameDoesNotExist.GetError("[FeedName]"),
-                Errors.PackageWithNameDoesNotExist.GetError("[FeedName]", "[PackageName]"),
+                GetFeedWithNameDoesNotExistError("[FeedName]"),
+                GetPackageWithNameDoesNotExistError("[FeedName]", "[PackageName]"),
             };
             x.ResponseExamples[Status409Conflict] = new RtfxErrorResponse
             {
-                Errors.ArtifactAlreadyExists.GetError("[FeedName]", "[PackageName]", "[SourceHash]"),
+                GetArtifactAlreadyExistsError("[FeedName]", "[PackageName]", "[SourceHash]"),
             };
         });
     }
@@ -92,19 +99,19 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
 
         if (feedId <= 0 && req.CreateFeedAndPackage != true)
         {
-            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithNameDoesNotExist.GetError(metadata.FeedName), ct);
+            await this.SendErrorAsync(Status404NotFound, GetFeedWithNameDoesNotExistError(metadata.FeedName), ct);
             return;
         }
 
         if (packageId <= 0 && req.CreateFeedAndPackage != true)
         {
-            await this.SendErrorAsync(Status404NotFound, Errors.PackageWithNameDoesNotExist.GetError(metadata.FeedName, metadata.PackageName), ct);
+            await this.SendErrorAsync(Status404NotFound, GetPackageWithNameDoesNotExistError(metadata.FeedName, metadata.PackageName), ct);
             return;
         }
 
         if (artifactId > 0 && req.OverwriteExisting != true)
         {
-            await this.SendErrorAsync(Status409Conflict, Errors.ArtifactAlreadyExists.GetError(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
+            await this.SendErrorAsync(Status409Conflict, GetArtifactAlreadyExistsError(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
             return;
         }
 
@@ -158,6 +165,15 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             statusCode = Status200OK;
         }
 
-        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(artifact)), statusCode, ct);
+        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService)), statusCode, ct);
     }
+
+    private static ValidationFailure GetFeedWithNameDoesNotExistError(string feedName)
+        => Errors.FeedWithNameDoesNotExist.GetError(feedName).WithPropertyName($"Artifact.Metadata.{nameof(ArtifactMetadata.FeedName)}");
+
+    private static ValidationFailure GetPackageWithNameDoesNotExistError(string feedName, string packageName)
+        => Errors.PackageWithNameDoesNotExist.GetError(feedName, packageName).WithPropertyName($"Artifact.Metadata.{nameof(ArtifactMetadata.PackageName)}");
+
+    private static ValidationFailure GetArtifactAlreadyExistsError(string feedName, string packageName, string sourceHash)
+        => Errors.ArtifactAlreadyExists.GetError(feedName, packageName, sourceHash).WithPropertyName($"Artifact.Metadata.{nameof(ArtifactMetadata.SourceHash)}");
 }

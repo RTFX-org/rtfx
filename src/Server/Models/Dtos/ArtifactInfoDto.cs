@@ -1,5 +1,6 @@
 ﻿using MaSch.Core.Extensions;
 using Rtfx.Server.Database.Entities;
+using Rtfx.Server.Services;
 using System.Diagnostics;
 
 namespace Rtfx.Server.Models.Dtos;
@@ -7,15 +8,15 @@ namespace Rtfx.Server.Models.Dtos;
 [DebuggerDisplay("{FeedName}/{PackageName}/{SourceHash}")]
 public sealed class ArtifactInfoDto
 {
-    public required long FeedId { get; init; }
+    public required string FeedId { get; init; }
 
     public required string FeedName { get; init; }
 
-    public required long PackageId { get; init; }
+    public required string PackageId { get; init; }
 
     public required string PackageName { get; init; }
 
-    public required long ArtifactId { get; init; }
+    public required string ArtifactId { get; init; }
 
     public required string SourceHash { get; init; }
 
@@ -25,15 +26,15 @@ public sealed class ArtifactInfoDto
 
     public required Dictionary<string, string?> Metadata { get; init; }
 
-    public static ArtifactInfoDto Create(Artifact artifact)
+    public static ArtifactInfoDto Create(Artifact artifact, IIdHashingService idHashingService)
     {
         return new ArtifactInfoDto
         {
-            FeedId = artifact.Package.Feed.FeedId,
+            FeedId = idHashingService.EncodeId(artifact.Package.Feed.FeedId),
             FeedName = artifact.Package.Feed.Name,
-            PackageId = artifact.Package.PackageId,
+            PackageId = idHashingService.EncodeId(artifact.Package.PackageId),
             PackageName = artifact.Package.Name,
-            ArtifactId = artifact.ArtifactId,
+            ArtifactId = idHashingService.EncodeId(artifact.ArtifactId),
             SourceHash = artifact.SourceHash.ToHexString(),
             Tags = artifact.Tags.Select(x => x.Tag).ToArray(),
             SourceVersions = artifact.SourceVersions

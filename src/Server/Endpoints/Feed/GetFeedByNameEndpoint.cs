@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
+using Rtfx.Server.Services;
 
 namespace Rtfx.Server.Endpoints.Feed;
 
@@ -21,10 +23,12 @@ public sealed class GetFeedByNameRequestValidator : Validator<GetFeedByNameReque
 public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNameResponse>
 {
     private readonly IFeedRepository _feedRepository;
+    private readonly IIdHashingService _idHashingService;
 
-    public GetFeedByNameEndpoint(IFeedRepository feedRepository)
+    public GetFeedByNameEndpoint(IFeedRepository feedRepository, IIdHashingService idHashingService)
     {
         _feedRepository = feedRepository;
+        _idHashingService = idHashingService;
     }
 
     public override void Configure()
@@ -41,7 +45,7 @@ public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNam
             x.Responses[Status404NotFound] = "The feed was not found.";
             x.ResponseExamples[Status404NotFound] = new RtfxErrorResponse
             {
-                Errors.FeedWithNameDoesNotExist.GetError("[FeedName]"),
+                GetFeedWithNameDoesNotExistError("[FeedName]"),
             };
         });
     }
@@ -51,10 +55,13 @@ public class GetFeedByNameEndpoint : Endpoint<GetFeedByNameRequest, GetFeedByNam
         var feed = await _feedRepository.TryGetFeedAsync(req.Name, ct);
         if (feed is null)
         {
-            await this.SendErrorAsync(Status404NotFound, Errors.FeedWithNameDoesNotExist.GetError(req.Name), ct);
+            await this.SendErrorAsync(Status404NotFound, GetFeedWithNameDoesNotExistError(req.Name), ct);
             return;
         }
 
-        await SendOkAsync(new GetFeedByNameResponse(FeedDto.Create(feed)), ct);
+        await SendOkAsync(new GetFeedByNameResponse(FeedDto.Create(feed, _idHashingService)), ct);
     }
+
+    private static ValidationFailure GetFeedWithNameDoesNotExistError(string name)
+        => Errors.FeedWithNameDoesNotExist.GetError(name).WithPropertyName(nameof(GetFeedByNameRequest.Name));
 }

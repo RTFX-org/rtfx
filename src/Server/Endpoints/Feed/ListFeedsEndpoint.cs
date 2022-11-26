@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
+using Rtfx.Server.Services;
 using System.ComponentModel;
 
 namespace Rtfx.Server.Endpoints.Feed;
@@ -30,10 +31,12 @@ public sealed class ListFeedsRequestValidator : Validator<ListFeedsRequest>
 public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResponse>
 {
     private readonly IFeedRepository _feedRepository;
+    private readonly IIdHashingService _idHashingService;
 
-    public ListFeedsEndpoint(IFeedRepository feedRepository)
+    public ListFeedsEndpoint(IFeedRepository feedRepository, IIdHashingService idHashingService)
     {
         _feedRepository = feedRepository;
+        _idHashingService = idHashingService;
     }
 
     public override void Configure()
@@ -53,7 +56,7 @@ public sealed class ListFeedsEndpoint : Endpoint<ListFeedsRequest, ListFeedsResp
     {
         var feeds = await _feedRepository
             .GetFeeds(req.Skip ?? 0, req.Take ?? 25)
-            .Select(x => FeedDto.Create(x))
+            .Select(x => FeedDto.Create(x, _idHashingService))
             .ToArrayAsync();
 
         await SendOkAsync(new ListFeedsResponse(feeds), ct);

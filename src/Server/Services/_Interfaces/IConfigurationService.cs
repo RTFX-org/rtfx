@@ -8,4 +8,6 @@ public interface IConfigurationService
     string GetDatabaseConnectionString();
 
     string GetArtifactStoragePath();
+
+    string GetIdHashSalt();
 }

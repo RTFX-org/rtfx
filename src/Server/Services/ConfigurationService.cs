@@ -4,16 +4,20 @@ namespace Rtfx.Server.Services;
 
 public sealed class ConfigurationService : IConfigurationService
 {
+    private const string FallbackIdHashSalt = "5E3C2600-E550-4AE7-914F-409503424DB9";
+
     private readonly IConfiguration _configuration;
+    private readonly ILogger<ConfigurationService> _logger;
     private readonly string _basePath;
     private string? _artifactStoragePath;
     private DatabaseType _databaseType = (DatabaseType)(-1);
     private string? _databaseConnectionString;
+    private string? _idHashSalt;
 
-    public ConfigurationService(IConfiguration configuration)
+    public ConfigurationService(IConfiguration configuration, ILogger<ConfigurationService> logger)
     {
         _configuration = configuration;
-
+        _logger = logger;
         var processPath = Environment.ProcessPath;
         var dir = Path.GetDirectoryName(processPath);
         if (dir is null || Path.GetFileName(processPath)?.Contains("dotnet") == true)
@@ -61,6 +65,23 @@ public sealed class ConfigurationService : IConfigurationService
         }
 
         return _databaseType;
+    }
+
+    public string GetIdHashSalt()
+    {
+        if (_idHashSalt is null)
+        {
+            var salt = _configuration["Security:IdHashSalt"];
+            if (salt is null or [])
+            {
+                _logger.LogWarning("The IdHashSalt is empty.");
+                salt = FallbackIdHashSalt;
+            }
+
+            _idHashSalt = salt;
+        }
+
+        return _idHashSalt;
     }
 
     private string GetSqliteConnectionString()

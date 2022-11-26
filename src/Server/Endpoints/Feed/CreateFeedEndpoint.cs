@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
+using Rtfx.Server.Services;
 
 namespace Rtfx.Server.Endpoints.Feed;
 
@@ -24,10 +26,12 @@ public sealed class CreateFeedRequestValidator : Validator<CreateFeedRequest>
 public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedResponse>
 {
     private readonly IFeedRepository _feedRepository;
+    private readonly IIdHashingService _idHashingService;
 
-    public CreateFeedEndpoint(IFeedRepository feedRepository)
+    public CreateFeedEndpoint(IFeedRepository feedRepository, IIdHashingService idHashingService)
     {
         _feedRepository = feedRepository;
+        _idHashingService = idHashingService;
     }
 
     public override void Configure()
@@ -46,7 +50,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
             x.Responses[Status409Conflict] = ErrorMessages.FeedWithNameAlreadyExists("[name]");
             x.ResponseExamples[Status409Conflict] = new RtfxErrorResponse
             {
-                Errors.FeedWithNameAlreadyExists.GetError("[name]"),
+                GetFeedWithNameAlreadyExistsError("[name]"),
             };
         });
     }
@@ -56,7 +60,7 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
         var feedExists = await _feedRepository.GetFeedExistAsync(req.Name, ct);
         if (feedExists)
         {
-            await this.SendErrorAsync(Status409Conflict, Errors.FeedWithNameAlreadyExists.GetError(req.Name), ct);
+            await this.SendErrorAsync(Status409Conflict, GetFeedWithNameAlreadyExistsError(req.Name), ct);
             return;
         }
 
@@ -66,6 +70,9 @@ public sealed class CreateFeedEndpoint : Endpoint<CreateFeedRequest, CreateFeedR
         };
         await _feedRepository.InsertFeedAsync(feed, ct);
 
-        await this.SendCreatedAsync(new CreateFeedResponse(FeedDto.Create(feed)), ct);
+        await this.SendCreatedAsync(new CreateFeedResponse(FeedDto.Create(feed, _idHashingService)), ct);
     }
+
+    private static ValidationFailure GetFeedWithNameAlreadyExistsError(string feedName)
+        => Errors.FeedWithNameAlreadyExists.GetError(feedName).WithPropertyName(nameof(CreateFeedRequest.Name));
 }

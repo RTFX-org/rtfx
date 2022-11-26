@@ -1,17 +1,13 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using NSwag.Generation;
 using Rtfx.Server.Database;
 using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
-using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
-var configurationService = new ConfigurationService(builder.Configuration);
-builder.Services.AddDatabaseContext(configurationService);
+builder.Services.AddDatabaseContext();
 builder.Services.AddFastEndpoints(
     o =>
     {
@@ -29,7 +25,8 @@ builder.Services.AddSwaggerDoc(
     shortSchemaNames: true,
     removeEmptySchemas: true,
     tagIndex: 0);
-builder.Services.AddSingleton<IConfigurationService>(configurationService);
+builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
+builder.Services.AddSingleton<IIdHashingService, IdHashingService>();
 builder.Services.AddSingleton<IArtifactValidationService, ArtifactValidationService>();
 builder.Services.AddSingleton<IArtifactStorageService, ArtifactStorageService>();
 builder.Services.AddScoped<IFeedRepository, FeedRepository>();
@@ -54,10 +51,7 @@ app.UseFastEndpoints(
             {
                 if (!x.ResponseExamples.ContainsKey(Status400BadRequest))
                 {
-                    x.ResponseExamples[Status400BadRequest] = new RtfxErrorResponse
-                    {
-                        new RtfxError { PropertyName = "[...]", ErrorCode = "string", Message = "string", AttemptedValue = "any" },
-                    };
+                    x.ResponseExamples[Status400BadRequest] = RtfxErrorResponse.DefaultExample;
                 }
             });
         };

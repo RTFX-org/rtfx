@@ -9,26 +9,32 @@ namespace Rtfx.Server.Models;
 [Newtonsoft.Json.JsonObject]
 public sealed class RtfxErrorResponse : IEnumerable
 {
+    public static RtfxErrorResponse DefaultExample => new RtfxErrorResponse { RtfxError.DefaultExample };
+
     public List<RtfxError> Errors { get; set; } = new();
 
-    public void Add(ValidationFailure failure)
+    public RtfxErrorResponse Add(ValidationFailure failure)
     {
         Errors.Add(new RtfxError(failure));
+        return this;
     }
 
-    public void Add(IEnumerable<ValidationFailure> failures)
+    public RtfxErrorResponse Add(IEnumerable<ValidationFailure> failures)
     {
         Errors.AddRange(failures.Select(x => new RtfxError(x)));
+        return this;
     }
 
-    public void Add(RtfxError error)
+    public RtfxErrorResponse Add(RtfxError error)
     {
         Errors.Add(error);
+        return this;
     }
 
-    public void Add(IEnumerable<RtfxError> errors)
+    public RtfxErrorResponse Add(IEnumerable<RtfxError> errors)
     {
         Errors.AddRange(errors);
+        return this;
     }
 
     public IEnumerator GetEnumerator() => Errors.GetEnumerator();
@@ -48,6 +54,8 @@ public sealed class RtfxError
         Message = failure.ErrorMessage;
         AttemptedValue = failure.AttemptedValue;
     }
+
+    public static RtfxError DefaultExample => new RtfxError { PropertyName = "[...]", ErrorCode = "string", Message = "string", AttemptedValue = "any" };
 
     public string? PropertyName { get; init; }
     public required string ErrorCode { get; init; }

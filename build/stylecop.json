@@ -7,6 +7,9 @@
     "orderingRules": {
       "systemUsingDirectivesFirst": false,
       "usingDirectivesPlacement": "outsideNamespace"
+    },
+    "namingRules": {
+      "allowedHungarianPrefixes": [ "id" ]
     }
   }
 }
