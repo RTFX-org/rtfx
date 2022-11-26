@@ -1,15 +1,17 @@
-﻿using Rtfx.Server.Common;
+﻿using Microsoft.Extensions.Options;
+using Rtfx.Server.Common;
+using Rtfx.Server.Configuration;
 using System.IO.Compression;
 
 namespace Rtfx.Server.Services;
 
 public sealed class ArtifactStorageService : IArtifactStorageService
 {
-    private readonly IConfigurationService _configuration;
+    private readonly IOptionsMonitor<ArtifactStorageOptions> _artifactStorageOptions;
 
-    public ArtifactStorageService(IConfigurationService configuration)
+    public ArtifactStorageService(IOptionsMonitor<ArtifactStorageOptions> artifactStorageOptions)
     {
-        _configuration = configuration;
+        _artifactStorageOptions = artifactStorageOptions;
     }
 
     public async Task SaveArtifact(long feedId, long packageId, long artifactId, Stream artifactStream)
@@ -34,7 +36,7 @@ public sealed class ArtifactStorageService : IArtifactStorageService
 
     private string GetArtifactPath(long feedId, long packageId, long artifactId)
     {
-        var storagePath = _configuration.GetArtifactStoragePath();
+        var storagePath = _artifactStorageOptions.CurrentValue.Path;
         return Path.Combine(storagePath, "Feeds", feedId.ToString(), "Packages", packageId.ToString(), "Artifacts", artifactId.ToString() + ".rtfct");
     }
 }

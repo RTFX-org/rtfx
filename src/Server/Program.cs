@@ -1,6 +1,7 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NSwag.Generation;
 using Rtfx.Server.Configuration;
 using Rtfx.Server.Database;
@@ -10,7 +11,11 @@ using Rtfx.Server.Services;
 using CorsOptions = Rtfx.Server.Configuration.CorsOptions;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.ConfigurationSectionName));
+builder.Services.AddSectionOptions<CorsOptions>();
+builder.Services.AddOptions<ArtifactStorageOptions, ArtifactStorageOptionsFactory>();
+builder.Services.AddOptions<SecurityOptions, SecurityOptionsFactory>();
+builder.Services.AddOptions<DatabaseOptions, DatabaseOptionsFactory>();
+builder.Services.AddTransient<IOptionsFactory<ArtifactStorageOptions>, ArtifactStorageOptionsFactory>();
 builder.Services.AddDatabaseContext();
 builder.Services.AddFastEndpoints(
     o =>
@@ -29,14 +34,13 @@ builder.Services.AddSwaggerDoc(
     shortSchemaNames: true,
     removeEmptySchemas: true,
     tagIndex: 0);
-builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
 builder.Services.AddSingleton<IIdHashingService, IdHashingService>();
 builder.Services.AddSingleton<IArtifactValidationService, ArtifactValidationService>();
 builder.Services.AddSingleton<IArtifactStorageService, ArtifactStorageService>();
 builder.Services.AddScoped<IFeedRepository, FeedRepository>();
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 builder.Services.AddScoped<IArtifactRepository, ArtifactRepository>();
-builder.Services.AddTransient<ICorsPolicyProvider, CorsPolicyProvider>();
+builder.Services.AddScoped<ICorsPolicyProvider, CorsPolicyProvider>();
 builder.Services.AddCors(
     x =>
     {

@@ -6,10 +6,10 @@ namespace Rtfx.Server.Configuration;
 
 internal sealed class CorsPolicyProvider : ICorsPolicyProvider
 {
-    private readonly IOptionsMonitor<CorsOptions> _corsOptions;
+    private readonly IOptionsSnapshot<CorsOptions> _corsOptions;
     private readonly ICorsPolicyProvider _inner;
 
-    public CorsPolicyProvider(IOptions<Microsoft.AspNetCore.Cors.Infrastructure.CorsOptions> options, IOptionsMonitor<CorsOptions> corsOptions)
+    public CorsPolicyProvider(IOptions<Microsoft.AspNetCore.Cors.Infrastructure.CorsOptions> options, IOptionsSnapshot<CorsOptions> corsOptions)
     {
         _corsOptions = corsOptions;
         _inner = new DefaultCorsPolicyProvider(options);
@@ -19,7 +19,7 @@ internal sealed class CorsPolicyProvider : ICorsPolicyProvider
     {
         CorsPolicy? policy = await _inner.GetPolicyAsync(context, policyName).ConfigureAwait(false);
         if (policy != null && policyName == null)
-            ApplyConfiguration(policy, _corsOptions.CurrentValue);
+            ApplyConfiguration(policy, _corsOptions.Value);
 
         return policy;
     }

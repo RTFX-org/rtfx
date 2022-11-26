@@ -1,8 +1,8 @@
 ﻿namespace Rtfx.Server.Configuration;
 
-internal sealed class CorsOptions
+public sealed class CorsOptions : IConfigurationSectionOptions
 {
-    public const string ConfigurationSectionName = "CORS";
+    public static string ConfigurationSectionName => "CORS";
 
-    public string[]? AllowedOrigins { get; set; }
+    public string[]? AllowedOrigins { get; init; }
 }

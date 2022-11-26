@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Rtfx.Server.Configuration;
 using Rtfx.Server.Database;
 using Rtfx.Server.Models;
-using Rtfx.Server.Services;
 
 namespace Rtfx.Server.Extensions;
 
@@ -15,12 +16,28 @@ public static class ServiceCollectionExtensions
 
         static DatabaseContext ResolveDatabaseContext(IServiceProvider serviceProvider)
         {
-            var databaseType = serviceProvider.GetRequiredService<IConfigurationService>().GetDatabaseType();
+            var databaseType = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value.Type;
             return databaseType switch
             {
                 DatabaseType.Sqlite => ActivatorUtilities.CreateInstance<SqliteDatabaseContext>(serviceProvider),
                 _ => throw new NotSupportedException($"The database type \"{databaseType.ToStringFast()}\" is not supported."),
             };
         }
+    }
+
+    public static OptionsBuilder<TOptions> AddSectionOptions<TOptions>(this IServiceCollection services)
+        where TOptions : class, IConfigurationSectionOptions
+    {
+        return OptionsServiceCollectionExtensions.AddOptions<TOptions>(services)
+            .BindConfiguration(TOptions.ConfigurationSectionName);
+    }
+
+    public static OptionsBuilder<TOptions> AddOptions<TOptions, TFactory>(this IServiceCollection services)
+        where TOptions : class
+        where TFactory : class, IOptionsFactory<TOptions>
+    {
+        services.AddSingleton<IOptionsFactory<TOptions>, TFactory>();
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
+        return OptionsServiceCollectionExtensions.AddOptions<TOptions>(services);
     }
 }

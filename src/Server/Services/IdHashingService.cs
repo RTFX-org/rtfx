@@ -1,17 +1,18 @@
 ﻿using HashidsNet;
+using Microsoft.Extensions.Options;
 
 namespace Rtfx.Server.Services;
 
-public class IdHashingService : IIdHashingService
+public sealed class IdHashingService : IIdHashingService, IDisposable
 {
-    private readonly Hashids _hashids;
+    private Hashids _hashids;
+    private IDisposable? _onOptionsChangeToken;
 
-    public IdHashingService(IConfigurationService configuration)
+    public IdHashingService(IOptionsMonitor<SecurityOptions> securityOptions)
     {
-        _hashids = new Hashids(
-            salt: configuration.GetIdHashSalt(),
-            minHashLength: 8,
-            alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
+        _hashids = CreateHashidsProvider(securityOptions.CurrentValue.IdHashSalt);
+
+        _onOptionsChangeToken = securityOptions.OnChange(o => _hashids = CreateHashidsProvider(o.IdHashSalt));
     }
 
     public string EncodeId(long id)
@@ -22,5 +23,18 @@ public class IdHashingService : IIdHashingService
     public bool TryDecodeId(string? idHash, out long id)
     {
         return _hashids.TryDecodeSingleLong(idHash, out id);
+    }
+
+    public void Dispose()
+    {
+        _onOptionsChangeToken?.Dispose();
+    }
+
+    private static Hashids CreateHashidsProvider(string salt)
+    {
+        return new Hashids(
+            salt: salt,
+            minHashLength: 8,
+            alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
     }
 }

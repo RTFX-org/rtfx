@@ -1,21 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rtfx.Server.Services;
+using Microsoft.Extensions.Options;
+using Rtfx.Server.Configuration;
 
 namespace Rtfx.Server.Database;
 
 public sealed class SqliteDatabaseContext : DatabaseContext
 {
-    private readonly IConfigurationService _configuration;
+    private readonly IOptions<DatabaseOptions> _options;
 
-    public SqliteDatabaseContext(ILoggerFactory loggerFactory, IConfigurationService configuration)
+    public SqliteDatabaseContext(ILoggerFactory loggerFactory, IOptions<DatabaseOptions> options)
         : base(loggerFactory)
     {
-        _configuration = configuration;
+        _options = options;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlite(_configuration.GetDatabaseConnectionString());
+        optionsBuilder.UseSqlite(_options.Value.ConnectionString);
     }
 }

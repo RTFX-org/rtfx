@@ -29,6 +29,7 @@
     <Using Include="FastEndpoints" />
     <Using Include="System.Text.RegularExpressions" />
     <Using Include="Rtfx.Server.Database.Entities" Alias="Db" />
+    <Using Include="Rtfx.Server.Configuration.SecurityOptions" Alias="SecurityOptions" />
     <Using Include="Microsoft.AspNetCore.Http.StatusCodes" Static="true" />
     <Using Include="Rtfx.Server.Extensions" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
