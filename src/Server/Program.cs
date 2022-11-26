@@ -1,12 +1,16 @@
 ﻿using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Generation;
+using Rtfx.Server.Configuration;
 using Rtfx.Server.Database;
 using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
+using CorsOptions = Rtfx.Server.Configuration.CorsOptions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.ConfigurationSectionName));
 builder.Services.AddDatabaseContext();
 builder.Services.AddFastEndpoints(
     o =>
@@ -32,9 +36,19 @@ builder.Services.AddSingleton<IArtifactStorageService, ArtifactStorageService>()
 builder.Services.AddScoped<IFeedRepository, FeedRepository>();
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 builder.Services.AddScoped<IArtifactRepository, ArtifactRepository>();
+builder.Services.AddTransient<ICorsPolicyProvider, CorsPolicyProvider>();
+builder.Services.AddCors(
+    x =>
+    {
+        x.AddDefaultPolicy(p => p
+            .DisallowCredentials()
+            .AllowAnyHeader()
+            .WithMethods("GET", "PUT", "DELETE"));
+    });
 
 var app = builder.Build();
 app.UseDefaultExceptionHandler();
+app.UseCors();
 app.UseAuthorization();
 app.UseFastEndpoints(
     c =>
