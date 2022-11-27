@@ -7,3 +7,11 @@ public enum DatabaseType
 {
     Sqlite,
 }
+
+[EnumExtensions]
+public enum IdType
+{
+    Feed,
+    Package,
+    Artifact,
+}

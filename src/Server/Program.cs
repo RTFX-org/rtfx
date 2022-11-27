@@ -1,5 +1,6 @@
 ﻿using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NSwag.Generation;
@@ -11,6 +12,16 @@ using Rtfx.Server.Services;
 using CorsOptions = Rtfx.Server.Configuration.CorsOptions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(
+    o =>
+    {
+        o.Limits.MaxRequestBodySize = null; // Unlimited
+    });
+builder.Services.Configure<FormOptions>(
+    o =>
+    {
+        o.MultipartBodyLengthLimit = long.MaxValue;
+    });
 builder.Services.AddSectionOptions<CorsOptions>();
 builder.Services.AddOptions<ArtifactStorageOptions, ArtifactStorageOptionsFactory>();
 builder.Services.AddOptions<SecurityOptions, SecurityOptionsFactory>();

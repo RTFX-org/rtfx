@@ -115,8 +115,6 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             return;
         }
 
-        await _artifactStorageService.SaveArtifact(feedId, packageId, artifactId, artifactStream);
-
         Db.Artifact artifact;
         int statusCode;
         if (artifactId == 0)
@@ -165,7 +163,9 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             statusCode = Status200OK;
         }
 
-        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService)), statusCode, ct);
+        _artifactStorageService.SaveArtifact(artifact.Package.Feed.FeedId, artifact.Package.PackageId, artifact.ArtifactId, artifactStream);
+
+        await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService, true)), statusCode, ct);
     }
 
     private static ValidationFailure GetFeedWithNameDoesNotExistError(string feedName)

@@ -2,6 +2,7 @@
 using Rtfx.Server.Database.Entities;
 using Rtfx.Server.Services;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace Rtfx.Server.Models.Dtos;
 
@@ -20,32 +21,37 @@ public sealed class ArtifactInfoDto
 
     public required string SourceHash { get; init; }
 
-    public required string[] Tags { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string[]? Tags { get; init; }
 
-    public required SourceVersionDto[] SourceVersions { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public SourceVersionDto[]? SourceVersions { get; init; }
 
-    public required Dictionary<string, string?> Metadata { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Dictionary<string, string?>? Metadata { get; init; }
 
-    public static ArtifactInfoDto Create(Artifact artifact, IIdHashingService idHashingService)
+    public static ArtifactInfoDto Create(Artifact artifact, IIdHashingService idHashingService, bool metadataIncluded)
     {
         return new ArtifactInfoDto
         {
-            FeedId = idHashingService.EncodeId(artifact.Package.Feed.FeedId),
+            FeedId = idHashingService.EncodeId(artifact.Package.Feed.FeedId, IdType.Feed),
             FeedName = artifact.Package.Feed.Name,
-            PackageId = idHashingService.EncodeId(artifact.Package.PackageId),
+            PackageId = idHashingService.EncodeId(artifact.Package.PackageId, IdType.Package),
             PackageName = artifact.Package.Name,
-            ArtifactId = idHashingService.EncodeId(artifact.ArtifactId),
+            ArtifactId = idHashingService.EncodeId(artifact.ArtifactId, IdType.Artifact),
             SourceHash = artifact.SourceHash.ToHexString(),
-            Tags = artifact.Tags.Select(x => x.Tag).ToArray(),
-            SourceVersions = artifact.SourceVersions
-                .Select(x =>
-                    new SourceVersionDto
-                    {
-                        Branch = x.Branch,
-                        Commit = x.Commit.ToHexString(),
-                    })
-                .ToArray(),
-            Metadata = artifact.Metadata.ToDictionary(x => x.Name, x => x.Value),
+            Tags = metadataIncluded ? artifact.Tags.Select(x => x.Tag).ToArray() : null,
+            SourceVersions = metadataIncluded
+                ? artifact.SourceVersions
+                    .Select(x =>
+                        new SourceVersionDto
+                        {
+                            Branch = x.Branch,
+                            Commit = x.Commit.ToHexString(),
+                        })
+                    .ToArray()
+                : null,
+            Metadata = metadataIncluded ? artifact.Metadata.ToDictionary(x => x.Name, x => x.Value) : null,
         };
     }
 }

@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using MaSch.Core.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Rtfx.Server.Database.Entities;
 using Rtfx.Server.Models;
 using Rtfx.Server.Models.Dtos;
 using Rtfx.Server.Repositories;
@@ -57,7 +59,7 @@ public class ListPackagesEndpoint : Endpoint<ListPackagesRequest, ListPackagesRe
         Summary(x =>
         {
             x.Summary = "Lists all available packages in a feed.";
-            x.Responses[Status200OK] = "The feed was found and the list of packages has ben successfully retrieved";
+            x.Responses[Status200OK] = "The feed was found and the list of packages has been successfully retrieved";
             x.Responses[Status404NotFound] = "The feed was not found.";
             x.ResponseExamples[Status400BadRequest] = new RtfxErrorResponse
             {
@@ -73,7 +75,7 @@ public class ListPackagesEndpoint : Endpoint<ListPackagesRequest, ListPackagesRe
 
     public override async Task HandleAsync(ListPackagesRequest req, CancellationToken ct)
     {
-        if (!_idHashingService.TryDecodeId(req.FeedId, out long feedId))
+        if (!_idHashingService.TryDecodeId(req.FeedId, IdType.Feed, out long feedId))
         {
             await this.SendErrorAsync(Status400BadRequest, GetInvalidFeedIdHashError(req.FeedId), ct);
             return;

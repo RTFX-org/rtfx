@@ -7,6 +7,10 @@ namespace Rtfx.Server.Models.Dtos;
 [DebuggerDisplay("{Name}")]
 public sealed class PackageDto
 {
+    public required string FeedId { get; init; }
+
+    public required string FeedName { get; init; }
+
     public required string Id { get; init; }
 
     public required string Name { get; init; }
@@ -17,7 +21,9 @@ public sealed class PackageDto
     {
         return new PackageDto
         {
-            Id = idHashingService.EncodeId(package.PackageId),
+            FeedId = idHashingService.EncodeId(package.Feed.FeedId, IdType.Feed),
+            FeedName = package.Feed.Name,
+            Id = idHashingService.EncodeId(package.PackageId, IdType.Package),
             Name = package.Name,
             CreationDate = package.CreationDate,
         };

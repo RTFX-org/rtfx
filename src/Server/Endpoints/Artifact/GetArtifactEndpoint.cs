@@ -59,7 +59,7 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
 
     public override async Task HandleAsync(GetArtifactRequest req, CancellationToken ct)
     {
-        if (!_idHashingService.TryDecodeId(req.ArtifactId, out long artifactId))
+        if (!_idHashingService.TryDecodeId(req.ArtifactId, IdType.Artifact, out long artifactId))
         {
             await this.SendErrorAsync(Status400BadRequest, GetInvalidArtifactIdHashError(req.ArtifactId), ct);
             return;
@@ -72,7 +72,7 @@ public class GetArtifactEndpoint : Endpoint<GetArtifactRequest, GetArtifactRespo
             return;
         }
 
-        await SendOkAsync(new GetArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService)), ct);
+        await SendOkAsync(new GetArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService, true)), ct);
     }
 
     private static ValidationFailure GetInvalidArtifactIdHashError(string id)

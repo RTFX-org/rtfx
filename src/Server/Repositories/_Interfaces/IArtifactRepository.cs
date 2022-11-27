@@ -8,4 +8,7 @@ public interface IArtifactRepository
     Task<long> InsertArtifact(Artifact artifact, CancellationToken ct);
     Task<Artifact> UpdateArtifactAsync(long artifactId, Action<Artifact> updateAction, CancellationToken ct);
     Task<Artifact?> TryGetArtifactWithMetadataAsync(long artifactId, CancellationToken ct);
+    Task<Artifact?> TryGetArtifactAsync(long artifactId, CancellationToken ct);
+    IQueryable<Artifact> GetArtifactsWithMetadata(long packageId, int skip, int take);
+    IQueryable<Artifact> GetArtifacts(long packageId, int skip, int take);
 }

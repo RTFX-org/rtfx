@@ -57,7 +57,7 @@ public sealed class DeleteFeedEndpoint : Endpoint<DeleteFeedRequest>
 
     public override async Task HandleAsync(DeleteFeedRequest req, CancellationToken ct)
     {
-        if (!_idHashingService.TryDecodeId(req.FeedId, out long feedId))
+        if (!_idHashingService.TryDecodeId(req.FeedId, IdType.Feed, out long feedId))
         {
             await this.SendErrorAsync(Status400BadRequest, GetInvalidFeedIdHashError(req.FeedId), ct);
             return;

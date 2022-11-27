@@ -17,7 +17,7 @@ public sealed class FeedDto
     {
         return new FeedDto
         {
-            Id = idHashingService.EncodeId(feed.FeedId),
+            Id = idHashingService.EncodeId(feed.FeedId, IdType.Feed),
             Name = feed.Name,
             CreationDate = feed.CreationDate,
         };
