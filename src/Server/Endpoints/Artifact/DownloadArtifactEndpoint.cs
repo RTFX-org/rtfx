@@ -1,12 +1,16 @@
 ﻿using FluentValidation.Results;
 using MaSch.Core.Extensions;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Net.Http.Headers;
 using Rtfx.Server.Models;
 using Rtfx.Server.Repositories;
 using Rtfx.Server.Services;
 
 namespace Rtfx.Server.Endpoints.Artifact;
 
-public sealed partial record DownloadArtifactRequest(string ArtifactId);
+public sealed partial record DownloadArtifactRequest(
+    string ArtifactId,
+    string[] Filter);
 
 public sealed class DownloadArtifactEndpoint : Endpoint<DownloadArtifactRequest>
 {
@@ -62,19 +66,38 @@ public sealed class DownloadArtifactEndpoint : Endpoint<DownloadArtifactRequest>
             return;
         }
 
-        using var artifactStream = await _artifactStorageService.TryLoadArtifactAsync(artifact.Package.FeedId, artifact.PackageId, artifactId, ct);
-        if (artifactStream is null)
+        if (req.Filter is null or [])
         {
-            await SendNoContentAsync(ct);
-            return;
-        }
+            using var artifactStream = await _artifactStorageService.TryLoadArtifactAsync(artifact.Package.FeedId, artifact.PackageId, artifactId, ct);
+            if (artifactStream is null)
+            {
+                await SendNoContentAsync(ct);
+                return;
+            }
 
-        await SendStreamAsync(
-            artifactStream,
-            fileName: $"{artifact.Package.Feed.Name}-{artifact.Package.Name}-{artifact.SourceHash.ToHexString()[..8]}.zip",
-            fileLengthBytes: artifactStream.Length,
-            cancellation: ct)
-            .ConfigureAwait(true);
+            await SendStreamAsync(
+                artifactStream,
+                fileName: $"{artifact.Package.Feed.Name}-{artifact.Package.Name}-{artifact.SourceHash.ToHexString()[..8]}.zip",
+                fileLengthBytes: artifactStream.Length,
+                cancellation: ct)
+                .ConfigureAwait(true);
+        }
+        else
+        {
+            var g = HttpContext.Features.Get<IHttpResponseBodyFeature>();
+            g.DisableBuffering();
+
+            HttpContext.MarkResponseStart();
+            HttpContext.Response.StatusCode = Status200OK;
+            HttpContext.Response.ContentType = "application/octet-stream";
+            var cdh = new ContentDispositionHeaderValue("attachment");
+            cdh.SetHttpFileName($"{artifact.Package.Feed.Name}-{artifact.Package.Name}-{artifact.SourceHash.ToHexString()[..8]}.zip");
+            HttpContext.Response.Headers.ContentDisposition = cdh.ToString();
+
+            await g.StartAsync();
+            await _artifactStorageService.WriteFilteredArtifactAsync(artifact.Package.FeedId, artifact.PackageId, artifactId, req.Filter, g.Stream, ct);
+            await g.CompleteAsync();
+        }
     }
 
     private static ValidationFailure GetInvalidArtifactIdHashError(string artifactId)

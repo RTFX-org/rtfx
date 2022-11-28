@@ -16,6 +16,8 @@ builder.WebHost.ConfigureKestrel(
     o =>
     {
         o.Limits.MaxRequestBodySize = null; // Unlimited
+        o.Limits.MaxResponseBufferSize = 64000;
+        o.AllowSynchronousIO = true; // Currently necessary due to https://github.com/icsharpcode/SharpZipLib/issues/801
     });
 builder.Services.Configure<FormOptions>(
     o =>

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using MaSch.Globbing;
+using Microsoft.Extensions.Options;
 using Rtfx.Server.Common;
 using Rtfx.Server.Configuration;
 using System.IO.Compression;
@@ -56,6 +58,34 @@ public sealed class ArtifactStorageService : IArtifactStorageService
             return null;
 
         return await FileStreamFactory.CreateAsync(artifactPath, FileMode.Open, FileAccess.Read, FileShare.Read, cancellation);
+    }
+
+    public async Task<bool> WriteFilteredArtifactAsync(long feedId, long packageId, long artifactId, string[] filter, Stream targetStream, CancellationToken cancellation)
+    {
+        var artifactPath = GetArtifactPath(feedId, packageId, artifactId);
+
+        if (!File.Exists(artifactPath))
+            return false;
+
+        var matcher = new GlobMatcher();
+        foreach (var f in filter)
+            matcher.Add(f);
+
+        using var artifactFileStream = await FileStreamFactory.CreateAsync(artifactPath, FileMode.Open, FileAccess.Read, FileShare.Read, cancellation);
+        using var artifactZipArchive = new ZipArchive(artifactFileStream, ZipArchiveMode.Read);
+        using var outZipStream = new ZipOutputStream(targetStream);
+
+        foreach (var entry in matcher.MatchFilesInZip(artifactZipArchive))
+        {
+            await outZipStream.PutNextEntryAsync(new ZipEntry(entry.FullName), cancellation);
+            using var entryStream = entry.Open();
+
+            await entryStream.CopyToAsync(outZipStream, cancellation);
+
+            await outZipStream.CloseEntryAsync(cancellation);
+        }
+
+        return true;
     }
 
     private string GetArtifactPath(long feedId, long packageId, long artifactId)
