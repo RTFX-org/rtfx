@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MaSch.Core;
+using Microsoft.EntityFrameworkCore;
 using Rtfx.Server.Database;
 using Rtfx.Server.Database.Entities;
 
@@ -82,6 +83,20 @@ public class ArtifactRepository : IArtifactRepository
             .Take(take)
             .Include(x => x.Package)
             .Include(x => x.Package.Feed);
+    }
+
+    public async Task RemoveArtifactAsync(long artifactId, CancellationToken ct)
+    {
+        Guard.NotSmallerThan(artifactId, 1);
+
+        var artifactToRemove = new Artifact
+        {
+            ArtifactId = artifactId,
+            SourceHash = null!,
+            Package = null!,
+        };
+        _database.Artifacts.Remove(artifactToRemove);
+        await _database.SaveChangesAsync(ct);
     }
 
     private IQueryable<Artifact> GetArtifactWithMetadataQuery(long artifactId)

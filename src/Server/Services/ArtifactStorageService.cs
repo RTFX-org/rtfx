@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Rtfx.Server.Common;
 using Rtfx.Server.Configuration;
-using Rtfx.Server.Models;
 using System.IO.Compression;
 
 namespace Rtfx.Server.Services;
@@ -15,40 +14,48 @@ public sealed class ArtifactStorageService : IArtifactStorageService
         _artifactStorageOptions = artifactStorageOptions;
     }
 
-    public void SaveArtifact(long feedId, long packageId, long artifactId, Stream artifactStream)
+    public async Task SaveArtifactAsync(long feedId, long packageId, long artifactId, Stream artifactStream, CancellationToken cancellation)
     {
-        using var scope = EnterSynchronizationScope(artifactId);
-
         var artifactPath = GetArtifactPath(feedId, packageId, artifactId);
         Directory.CreateDirectory(Path.GetDirectoryName(artifactPath)!);
 
-        using var fileStream = new FileStream(artifactPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-        artifactStream.CopyTo(fileStream);
+        using var fileLock = await FileStreamFactory.ObtainFileLock(artifactPath, FileAccess.ReadWrite, FileShare.None, cancellation);
 
-        fileStream.Seek(0, SeekOrigin.Begin);
-        using var zip = new ZipArchive(fileStream, ZipArchiveMode.Update);
-        zip.GetEntry("artifact.metadata")?.Delete();
+        var backupFile = GetTempFilePath();
+        if (File.Exists(artifactPath))
+            File.Move(artifactPath, backupFile);
+
+        try
+        {
+            using var fileStream = FileStreamFactory.Create(fileLock, FileMode.Create);
+
+            await artifactStream.CopyToAsync(fileStream, cancellation);
+
+            fileStream.Seek(0, SeekOrigin.Begin);
+            using var zip = new ZipArchive(fileStream, ZipArchiveMode.Update);
+            zip.GetEntry("artifact.metadata")?.Delete();
+        }
+        catch
+        {
+            if (File.Exists(backupFile))
+                File.Move(backupFile, artifactPath, true);
+            throw;
+        }
+        finally
+        {
+            if (File.Exists(backupFile))
+                File.Delete(backupFile);
+        }
     }
 
-    public DownloadableArtifact? TryGetDownloadableArtifact(long feedId, long packageId, long artifactId)
+    public async Task<FileStream?> TryLoadArtifactAsync(long feedId, long packageId, long artifactId, CancellationToken cancellation)
     {
-        using var scope = EnterSynchronizationScope(artifactId);
-
         var artifactPath = GetArtifactPath(feedId, packageId, artifactId);
 
         if (!File.Exists(artifactPath))
             return null;
 
-        var tmpFile = GetDownloadableFilePath();
-        Directory.CreateDirectory(Path.GetDirectoryName(tmpFile)!);
-        File.Copy(artifactPath, tmpFile);
-
-        return new DownloadableArtifact(tmpFile);
-    }
-
-    private static NamedSynchronizationScope EnterSynchronizationScope(long artifactId)
-    {
-        return NamedSynchronizationScope.Enter($"Artifact:{artifactId}");
+        return await FileStreamFactory.CreateAsync(artifactPath, FileMode.Open, FileAccess.Read, FileShare.Read, cancellation);
     }
 
     private string GetArtifactPath(long feedId, long packageId, long artifactId)
@@ -57,9 +64,11 @@ public sealed class ArtifactStorageService : IArtifactStorageService
         return Path.Combine(storagePath, "Feeds", feedId.ToString(), "Packages", packageId.ToString(), "Artifacts", artifactId.ToString() + ".rtfct");
     }
 
-    private string GetDownloadableFilePath()
+    private string GetTempFilePath()
     {
         var storagePath = _artifactStorageOptions.CurrentValue.Path;
-        return Path.Combine(storagePath, ".tmp", Guid.NewGuid().ToString() + ".zip");
+        var tmpPath = Path.Combine(storagePath, ".tmp");
+        Directory.CreateDirectory(tmpPath);
+        return Path.Combine(tmpPath, Guid.NewGuid().ToString() + ".tmp");
     }
 }

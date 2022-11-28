@@ -11,4 +11,5 @@ public interface IArtifactRepository
     Task<Artifact?> TryGetArtifactAsync(long artifactId, CancellationToken ct);
     IQueryable<Artifact> GetArtifactsWithMetadata(long packageId, int skip, int take);
     IQueryable<Artifact> GetArtifacts(long packageId, int skip, int take);
+    Task RemoveArtifactAsync(long artifactId, CancellationToken ct);
 }

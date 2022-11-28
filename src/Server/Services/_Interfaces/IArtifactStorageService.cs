@@ -1,9 +1,7 @@
-﻿using Rtfx.Server.Models;
-
-namespace Rtfx.Server.Services;
+﻿namespace Rtfx.Server.Services;
 
 public interface IArtifactStorageService
 {
-    void SaveArtifact(long feedId, long packageId, long artifactId, Stream artifactStream);
-    DownloadableArtifact? TryGetDownloadableArtifact(long feedId, long packageId, long artifactId);
+    Task SaveArtifactAsync(long feedId, long packageId, long artifactId, Stream artifactStream, CancellationToken cancellation);
+    Task<FileStream?> TryLoadArtifactAsync(long feedId, long packageId, long artifactId, CancellationToken cancellation);
 }

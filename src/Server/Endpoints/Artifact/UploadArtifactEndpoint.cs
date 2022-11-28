@@ -109,6 +109,7 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             return;
         }
 
+        bool isNewArtifact = artifactId == 0;
         if (artifactId > 0 && req.OverwriteExisting != true)
         {
             await this.SendErrorAsync(Status409Conflict, GetArtifactAlreadyExistsError(metadata.FeedName, metadata.PackageName, metadata.SourceHash), ct);
@@ -163,7 +164,16 @@ public class UploadArtifactEndpoint : Endpoint<UploadArtifactRequest, UploadArti
             statusCode = Status200OK;
         }
 
-        _artifactStorageService.SaveArtifact(artifact.Package.Feed.FeedId, artifact.Package.PackageId, artifact.ArtifactId, artifactStream);
+        try
+        {
+            await _artifactStorageService.SaveArtifactAsync(artifact.Package.Feed.FeedId, artifact.Package.PackageId, artifact.ArtifactId, artifactStream, ct);
+        }
+        catch
+        {
+            if (isNewArtifact)
+                await _artifactRepository.RemoveArtifactAsync(artifactId, ct);
+            throw;
+        }
 
         await SendAsync(new UploadArtifactResponse(ArtifactInfoDto.Create(artifact, _idHashingService, true)), statusCode, ct);
     }
