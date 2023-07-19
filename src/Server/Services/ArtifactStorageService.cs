@@ -71,14 +71,14 @@ public sealed class ArtifactStorageService : IArtifactStorageService
         foreach (var f in filter)
             matcher.Add(f);
 
-        using var artifactFileStream = await FileStreamFactory.CreateAsync(artifactPath, FileMode.Open, FileAccess.Read, FileShare.Read, cancellation);
+        await using var artifactFileStream = await FileStreamFactory.CreateAsync(artifactPath, FileMode.Open, FileAccess.Read, FileShare.Read, cancellation);
         using var artifactZipArchive = new ZipArchive(artifactFileStream, ZipArchiveMode.Read);
-        using var outZipStream = new ZipOutputStream(targetStream);
+        await using var outZipStream = new ZipOutputStream(targetStream);
 
         foreach (var entry in matcher.MatchFilesInZip(artifactZipArchive))
         {
             await outZipStream.PutNextEntryAsync(new ZipEntry(entry.FullName), cancellation);
-            using var entryStream = entry.Open();
+            await using var entryStream = entry.Open();
 
             await entryStream.CopyToAsync(outZipStream, cancellation);
 
